@@ -16,15 +16,12 @@ from azure.cli.core.aaz import *
 )
 class Update(AAZCommand):
     """Update the resource type skus in the given resource type.
-
-    :example: sku nested-resource-type-first update
-        az providerhub sku nested-resource-type-first update --nested-resource-type-first "nestedResourceTypeFirst" --sku-settings [{"name":"freeSku","kind":"Standard","tier":"Tier1"},{"name":"premiumSku","costs":[{"meterId":"xxx"}],"kind":"Premium","tier":"Tier2"}] --provider-namespace "{providerNamespace}" --resource-type "{resourceType}" --sku "{skuName}"
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/skus/{}", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/skus/{}", "2026-02-01-preview"],
         ]
     }
 
@@ -47,7 +44,7 @@ class Update(AAZCommand):
 
         _args_schema = cls._args_schema
         _args_schema.nested_resource_type_first = AAZStrArg(
-            options=["--nested-first", "--nested-resource-type-first"],
+            options=["--nested-resource-type-first"],
             help="The first child resource type.",
             required=True,
             id_part="child_name_2",
@@ -190,8 +187,9 @@ class Update(AAZCommand):
         )
         _element.type = AAZStrArg(
             options=["type"],
+            help="The type.",
             nullable=True,
-            enum={"ArcZone": "ArcZone", "EdgeZone": "EdgeZone", "NotSpecified": "NotSpecified"},
+            enum={"ArcZone": "ArcZone", "CustomLocation": "CustomLocation", "EdgeZone": "EdgeZone", "NotSpecified": "NotSpecified"},
         )
         _element.zone_details = AAZListArg(
             options=["zone-details"],
@@ -364,7 +362,7 @@ class Update(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }
@@ -455,7 +453,7 @@ class Update(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }

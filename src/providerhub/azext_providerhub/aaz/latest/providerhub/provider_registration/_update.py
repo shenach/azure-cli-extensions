@@ -16,15 +16,12 @@ from azure.cli.core.aaz import *
 )
 class Update(AAZCommand):
     """Update the provider registration.
-
-    :example: provider-registration update
-        az providerhub provider-registration update --token-auth-configuration authentication-scheme="PoP" signed-request-scope="ResourceUri" --service-tree-infos service-id="d1b7d8ba-05e2-48e6-90d6-d781b99c6e69" component-id="d1b7d8ba-05e2-48e6-90d6-d781b99c6e69" --capabilities effect="Allow" quota-id="CSP_2015-05-01" --capabilities effect="Allow" quota-id="CSP_MG_2017-12-01" --manifest-owners "SPARTA-PlatformServiceAdministrator" --incident-contact-email "rpaascore@microsoft.com" --incident-routing-service "Resource Provider Service as a Service" --incident-routing-team "RPaaS" --provider-version "2.0" --provider-namespace "{providerNamespace}" --metadata "BypassManifestValidation":true
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}", "2026-02-01-preview"],
         ]
     }
 
@@ -54,205 +51,6 @@ class Update(AAZCommand):
             id_part="name",
         )
 
-        # define Arg Group "FeaturesRule"
-
-        _args_schema = cls._args_schema
-        _args_schema.required_features_policy = AAZStrArg(
-            options=["--req-features-policy", "--required-features-policy"],
-            arg_group="FeaturesRule",
-            help="The accepted values are \"Any\" or \"All\".",
-            enum={"All": "All", "Any": "Any"},
-        )
-
-        # define Arg Group "Management"
-
-        _args_schema = cls._args_schema
-        _args_schema.authorization_owners = AAZListArg(
-            options=["--authorization-owners"],
-            arg_group="Management",
-            help="The authorization owners.",
-            nullable=True,
-        )
-        _args_schema.canary_manifest_owners = AAZListArg(
-            options=["--canary-manifest-owners"],
-            arg_group="Management",
-            help="List of manifest owners for canary.",
-            nullable=True,
-        )
-        _args_schema.error_response_message_options = AAZObjectArg(
-            options=["--message-options", "--error-response-message-options"],
-            arg_group="Management",
-            help="Options for error response messages.",
-            nullable=True,
-        )
-        _args_schema.expedited_rollout_metadata = AAZObjectArg(
-            options=["--rollout-metadata", "--expedited-rollout-metadata"],
-            arg_group="Management",
-            help="Metadata for expedited rollout.",
-            nullable=True,
-        )
-        _args_schema.expedited_rollout_submitters = AAZListArg(
-            options=["--rollout-submitters", "--expedited-rollout-submitters"],
-            arg_group="Management",
-            help="List of expedited rollout submitters.",
-            nullable=True,
-        )
-        _args_schema.incident_contact_email = AAZStrArg(
-            options=["--incident-contact-email"],
-            arg_group="Management",
-            help="The email address of contacts for incidents related to the RP.",
-            nullable=True,
-        )
-        _args_schema.incident_routing_service = AAZStrArg(
-            options=["--incident-service", "--incident-routing-service"],
-            arg_group="Management",
-            help="The service in IcM when creating or transferring incidents to the RP.",
-            nullable=True,
-        )
-        _args_schema.incident_routing_team = AAZStrArg(
-            options=["--incident-team", "--incident-routing-team"],
-            arg_group="Management",
-            help="The team in IcM when creating or transferring incidents to the RP.",
-            nullable=True,
-        )
-        _args_schema.manifest_owners = AAZListArg(
-            options=["--manifest-owners"],
-            singular_options=["--manifest-owner"],
-            arg_group="Management",
-            help="Specifies an array of required ACIS claims to modify the resource provider's manifest content via ACIS.",
-            nullable=True,
-        )
-        _args_schema.pc_code = AAZStrArg(
-            options=["--pc-code"],
-            arg_group="Management",
-            help="The profit center code for the subscription.",
-            nullable=True,
-        )
-        _args_schema.profit_center_program_id = AAZStrArg(
-            options=["--pc-program-id", "--profit-center-program-id"],
-            arg_group="Management",
-            help="The profit center program id for the subscription.",
-            nullable=True,
-        )
-        _args_schema.resource_access_policy = AAZStrArg(
-            options=["--resource-access-policy"],
-            arg_group="Management",
-            help="The resource access policy.",
-            nullable=True,
-            enum={"AcisActionAllowed": "AcisActionAllowed", "AcisReadAllowed": "AcisReadAllowed", "NotSpecified": "NotSpecified"},
-        )
-        _args_schema.resource_access_roles = AAZListArg(
-            options=["--resource-access-roles"],
-            arg_group="Management",
-            help="The resource access roles.",
-            nullable=True,
-        )
-        _args_schema.schema_owners = AAZListArg(
-            options=["--schema-owners"],
-            singular_options=["--schema-owner", "--schema-owners"],
-            arg_group="Management",
-            help="Specifies an array of needed ACIS claims to modify the resource provider schema via ACIS.",
-            nullable=True,
-        )
-        _args_schema.service_tree_infos = AAZListArg(
-            options=["--service-tree-infos"],
-            singular_options=["--service-tree-info", "--service-tree-infos"],
-            arg_group="Management",
-            help="The ServiceTree information for the resource provider.",
-            nullable=True,
-        )
-
-        authorization_owners = cls._args_schema.authorization_owners
-        authorization_owners.Element = AAZStrArg(
-            nullable=True,
-        )
-
-        canary_manifest_owners = cls._args_schema.canary_manifest_owners
-        canary_manifest_owners.Element = AAZStrArg(
-            nullable=True,
-        )
-
-        error_response_message_options = cls._args_schema.error_response_message_options
-        error_response_message_options.server_failure_response_message_type = AAZStrArg(
-            options=["server-failure-response-message-type"],
-            help="Type of server failure response message.",
-            nullable=True,
-            enum={"NotSpecified": "NotSpecified", "OutageReporting": "OutageReporting"},
-        )
-
-        expedited_rollout_metadata = cls._args_schema.expedited_rollout_metadata
-        expedited_rollout_metadata.enabled = AAZBoolArg(
-            options=["enabled"],
-            help="Expedited rollout enabled?",
-            nullable=True,
-        )
-        expedited_rollout_metadata.expedited_rollout_intent = AAZStrArg(
-            options=["expedited-rollout-intent"],
-            help="Expedited rollout intent.",
-            nullable=True,
-            enum={"Hotfix": "Hotfix", "NotSpecified": "NotSpecified"},
-        )
-
-        expedited_rollout_submitters = cls._args_schema.expedited_rollout_submitters
-        expedited_rollout_submitters.Element = AAZStrArg(
-            nullable=True,
-        )
-
-        manifest_owners = cls._args_schema.manifest_owners
-        manifest_owners.Element = AAZStrArg(
-            nullable=True,
-        )
-
-        resource_access_roles = cls._args_schema.resource_access_roles
-        resource_access_roles.Element = AAZObjectArg(
-            nullable=True,
-        )
-
-        _element = cls._args_schema.resource_access_roles.Element
-        _element.actions = AAZListArg(
-            options=["actions"],
-            nullable=True,
-        )
-        _element.allowed_group_claims = AAZListArg(
-            options=["allowed-group-claims"],
-            nullable=True,
-        )
-
-        actions = cls._args_schema.resource_access_roles.Element.actions
-        actions.Element = AAZStrArg(
-            nullable=True,
-        )
-
-        allowed_group_claims = cls._args_schema.resource_access_roles.Element.allowed_group_claims
-        allowed_group_claims.Element = AAZStrArg(
-            nullable=True,
-        )
-
-        schema_owners = cls._args_schema.schema_owners
-        schema_owners.Element = AAZStrArg(
-            nullable=True,
-        )
-
-        service_tree_infos = cls._args_schema.service_tree_infos
-        service_tree_infos.Element = AAZObjectArg(
-            nullable=True,
-        )
-
-        _element = cls._args_schema.service_tree_infos.Element
-        _element.component_id = AAZStrArg(
-            options=["component-id"],
-            nullable=True,
-        )
-        _element.readiness = AAZStrArg(
-            options=["readiness"],
-            nullable=True,
-            enum={"ClosingDown": "ClosingDown", "Deprecated": "Deprecated", "GA": "GA", "InDevelopment": "InDevelopment", "InternalOnly": "InternalOnly", "PrivatePreview": "PrivatePreview", "PublicPreview": "PublicPreview", "RemovedFromARM": "RemovedFromARM", "Retired": "Retired"},
-        )
-        _element.service_id = AAZStrArg(
-            options=["service-id"],
-            nullable=True,
-        )
-
         # define Arg Group "Properties"
 
         _args_schema = cls._args_schema
@@ -265,20 +63,17 @@ class Update(AAZCommand):
         )
         _args_schema.capabilities = AAZListArg(
             options=["--capabilities"],
-            singular_options=["--capability", "--capabilities"],
             arg_group="Properties",
-            help="This allows a restrictive subscription type to have access to register and use the Resource Provider.",
             nullable=True,
         )
         _args_schema.cross_tenant_token_validation = AAZStrArg(
-            options=["--token-validation", "--cross-tenant-token-validation"],
+            options=["--cross-tenant-token-validation"],
             arg_group="Properties",
-            help="The cross tenant token validation.",
             nullable=True,
             enum={"EnsureSecureValidation": "EnsureSecureValidation", "PassthroughInsecureToken": "PassthroughInsecureToken"},
         )
         _args_schema.custom_manifest_version = AAZStrArg(
-            options=["--custom-manifest-vers", "--custom-manifest-version"],
+            options=["--custom-manifest-version"],
             arg_group="Properties",
             help="Custom manifest version.",
             nullable=True,
@@ -286,19 +81,27 @@ class Update(AAZCommand):
         _args_schema.dsts_configuration = AAZObjectArg(
             options=["--dsts-configuration"],
             arg_group="Properties",
-            help="The DSTS configuration.",
+            nullable=True,
+        )
+        _args_schema.enable_preset_resource_types = AAZBoolArg(
+            options=["--enable-preset-resource-types"],
+            arg_group="Properties",
+            help="Preset resource types enabled?",
             nullable=True,
         )
         _args_schema.enable_tenant_linked_notification = AAZBoolArg(
-            options=["--enable-linked-notif", "--enable-tenant-linked-notification"],
+            options=["--enable-tenant-linked-notification"],
             arg_group="Properties",
-            help="The enable tenant linked notification.",
+            nullable=True,
+        )
+        _args_schema.features_rule = AAZObjectArg(
+            options=["--features-rule"],
+            arg_group="Properties",
             nullable=True,
         )
         _args_schema.global_notification_endpoints = AAZListArg(
-            options=["--global-notif-endpoints", "--global-notification-endpoints"],
+            options=["--global-notification-endpoints"],
             arg_group="Properties",
-            help="The global notification endpoints.",
             nullable=True,
         )
         _args_schema.legacy_namespace = AAZStrArg(
@@ -313,29 +116,36 @@ class Update(AAZCommand):
             help="Legacy registrations.",
             nullable=True,
         )
-        _args_schema.linked_notification_rules = AAZListArg(
-            options=["--linked-notif-rules", "--linked-notification-rules"],
+        _args_schema.lifecycle_info = AAZObjectArg(
+            options=["--lifecycle-info"],
             arg_group="Properties",
-            help="The linked notification rules.",
+            help="Resource provider lifecycle information.",
+            nullable=True,
+        )
+        _args_schema.linked_notification_rules = AAZListArg(
+            options=["--linked-notification-rules"],
+            arg_group="Properties",
+            nullable=True,
+        )
+        _args_schema.management = AAZObjectArg(
+            options=["--management"],
+            arg_group="Properties",
             nullable=True,
         )
         _args_schema.management_group_global_notification_endpoints = AAZListArg(
-            options=["--mg-notif-endpoints", "--management-group-global-notification-endpoints"],
+            options=["--management-group-global-notification-endpoints"],
             arg_group="Properties",
             help="Management groups global notification endpoints.",
             nullable=True,
         )
-        _args_schema.metadata = AAZFreeFormDictArg(
+        _args_schema.metadata = AAZDictArg(
             options=["--metadata"],
             arg_group="Properties",
-            help="The metadata.",
             nullable=True,
-            blank={},
         )
         _args_schema.namespace = AAZStrArg(
             options=["--namespace"],
             arg_group="Properties",
-            help="The name of the resource provider hosted within ProviderHub.",
             nullable=True,
         )
         _args_schema.notification_options = AAZStrArg(
@@ -354,7 +164,12 @@ class Update(AAZCommand):
         _args_schema.notifications = AAZListArg(
             options=["--notifications"],
             arg_group="Properties",
-            help="The notifications object.",
+            nullable=True,
+        )
+        _args_schema.obo_subscription_id = AAZStrArg(
+            options=["--obo-subscription-id"],
+            arg_group="Properties",
+            help="The on behalf of subscription id for the resource provider.",
             nullable=True,
         )
         _args_schema.optional_features = AAZListArg(
@@ -364,64 +179,61 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.private_resource_provider_configuration = AAZObjectArg(
-            options=["--private-rp-config", "--private-resource-provider-configuration"],
+            options=["--private-resource-provider-configuration"],
             arg_group="Properties",
-            help="The private resource provider configuration.",
             nullable=True,
         )
         _args_schema.provider_authentication = AAZObjectArg(
-            options=["--provider-authn", "--provider-authentication"],
+            options=["--provider-authentication"],
             arg_group="Properties",
-            help="Used to set alternative audiences or resources that ARM should accept from the token while authenticating requests for the provider.",
             nullable=True,
         )
         _args_schema.provider_authorizations = AAZListArg(
             options=["--provider-authorizations"],
-            singular_options=["--provider-auth", "--provider-authz", "--provider-authorizations"],
             arg_group="Properties",
-            help="The resource provider authorizations.",
             nullable=True,
         )
         _args_schema.provider_hub_metadata = AAZObjectArg(
             options=["--provider-hub-metadata"],
             arg_group="Properties",
-            help="The ProviderHub metadata.",
             nullable=True,
         )
         _args_schema.provider_type = AAZStrArg(
             options=["--provider-type"],
             arg_group="Properties",
-            help="The provider type. Provider type options are: AuthorizationFree, External, Hidden, Internal, LegacyRegistrationRequired, NotSpecified, RegistrationFree, TenantOnly. Select multiple with comma separated string.",
             nullable=True,
+            enum={"AuthorizationFree": "AuthorizationFree", "Decommissioned": "Decommissioned", "External": "External", "Hidden": "Hidden", "Internal": "Internal", "LegacyRegistrationRequired": "LegacyRegistrationRequired", "NotSpecified": "NotSpecified", "RegistrationFree": "RegistrationFree", "TenantOnly": "TenantOnly"},
         )
         _args_schema.provider_version = AAZStrArg(
             options=["--provider-version"],
             arg_group="Properties",
-            help="The provider version.",
+            nullable=True,
+        )
+        _args_schema.request_header_options = AAZObjectArg(
+            options=["--request-header-options"],
+            arg_group="Properties",
             nullable=True,
         )
         _args_schema.required_features = AAZListArg(
             options=["--required-features"],
             arg_group="Properties",
-            help="The required features.",
             nullable=True,
         )
         _args_schema.resource_group_lock_option_during_move = AAZObjectArg(
-            options=["--rg-lock-option", "--resource-group-lock-option-during-move"],
+            options=["--resource-group-lock-option-during-move"],
             arg_group="Properties",
             help="Resource group lock option during move.",
             nullable=True,
         )
         _args_schema.resource_hydration_accounts = AAZListArg(
-            options=["--resc-hydration-accts", "--resource-hydration-accounts"],
+            options=["--resource-hydration-accounts"],
             arg_group="Properties",
             help="resource hydration accounts",
             nullable=True,
         )
         _args_schema.resource_provider_authorization_rules = AAZObjectArg(
-            options=["--rp-auth-rules", "--resource-provider-authorization-rules"],
+            options=["--resource-provider-authorization-rules"],
             arg_group="Properties",
-            help="The resource provider authorization rules.",
             nullable=True,
         )
         _args_schema.response_options = AAZObjectArg(
@@ -433,25 +245,26 @@ class Update(AAZCommand):
         _args_schema.service_name = AAZStrArg(
             options=["--service-name"],
             arg_group="Properties",
-            help="The service name.",
             nullable=True,
         )
         _args_schema.services = AAZListArg(
             options=["--services"],
             arg_group="Properties",
-            help="The services.",
+            nullable=True,
+        )
+        _args_schema.subscription_lifecycle_notification_specifications = AAZObjectArg(
+            options=["--subscription-lifecycle-notification-specifications"],
+            arg_group="Properties",
             nullable=True,
         )
         _args_schema.template_deployment_options = AAZObjectArg(
-            options=["--tmplt-deploy-opt", "--template-deployment-options"],
+            options=["--template-deployment-options"],
             arg_group="Properties",
-            help="The template deployment options.",
             nullable=True,
         )
         _args_schema.token_auth_configuration = AAZObjectArg(
-            options=["--token-auth-config", "--token-auth-configuration"],
+            options=["--token-auth-configuration"],
             arg_group="Properties",
-            help="The token auth configuration.",
             nullable=True,
         )
         cls._build_args_token_auth_configuration_update(_args_schema.token_auth_configuration)
@@ -488,6 +301,12 @@ class Update(AAZCommand):
             options=["service-name"],
         )
 
+        features_rule = cls._args_schema.features_rule
+        features_rule.required_features_policy = AAZStrArg(
+            options=["required-features-policy"],
+            enum={"All": "All", "Any": "Any"},
+        )
+
         global_notification_endpoints = cls._args_schema.global_notification_endpoints
         global_notification_endpoints.Element = AAZObjectArg(
             nullable=True,
@@ -496,6 +315,36 @@ class Update(AAZCommand):
 
         legacy_registrations = cls._args_schema.legacy_registrations
         legacy_registrations.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        lifecycle_info = cls._args_schema.lifecycle_info
+        lifecycle_info.allowed_subscriptions = AAZListArg(
+            options=["allowed-subscriptions"],
+            help="The list of allowed subscriptions for this resource provider.",
+            nullable=True,
+        )
+        lifecycle_info.isolation_type = AAZStrArg(
+            options=["isolation-type"],
+            help="The isolation type.",
+            nullable=True,
+            enum={"Private": "Private", "Public": "Public"},
+        )
+        lifecycle_info.lifecycle_stage = AAZStrArg(
+            options=["lifecycle-stage"],
+            help="The lifecycle stage.",
+            nullable=True,
+            enum={"GA": "GA", "InDevelopment": "InDevelopment", "PrivatePreview": "PrivatePreview", "PublicPreview": "PublicPreview", "Retired": "Retired"},
+        )
+        lifecycle_info.partner_category = AAZStrArg(
+            options=["partner-category"],
+            help="The partner category.",
+            nullable=True,
+            enum={"FirstParty": "FirstParty", "ThirdParty": "ThirdParty"},
+        )
+
+        allowed_subscriptions = cls._args_schema.lifecycle_info.allowed_subscriptions
+        allowed_subscriptions.Element = AAZStrArg(
             nullable=True,
         )
 
@@ -543,11 +392,195 @@ class Update(AAZCommand):
         )
         cls._build_args_resource_provider_endpoint_update(endpoints.Element)
 
+        management = cls._args_schema.management
+        management.authorization_owners = AAZListArg(
+            options=["authorization-owners"],
+            nullable=True,
+        )
+        management.canary_manifest_owners = AAZListArg(
+            options=["canary-manifest-owners"],
+            help="List of manifest owners for canary.",
+            nullable=True,
+        )
+        management.error_response_message_options = AAZObjectArg(
+            options=["error-response-message-options"],
+            help="Options for error response messages.",
+            nullable=True,
+        )
+        management.expedited_rollout_metadata = AAZObjectArg(
+            options=["expedited-rollout-metadata"],
+            help="Metadata for expedited rollout.",
+            nullable=True,
+        )
+        management.expedited_rollout_submitters = AAZListArg(
+            options=["expedited-rollout-submitters"],
+            help="List of expedited rollout submitters.",
+            nullable=True,
+        )
+        management.feature_approval_claims = AAZListArg(
+            options=["feature-approval-claims"],
+            help="List of claims to approve or reject feature registration.",
+            nullable=True,
+        )
+        management.feature_management_owners = AAZListArg(
+            options=["feature-management-owners"],
+            nullable=True,
+        )
+        management.incident_contact_email = AAZStrArg(
+            options=["incident-contact-email"],
+            nullable=True,
+        )
+        management.incident_routing_service = AAZStrArg(
+            options=["incident-routing-service"],
+            nullable=True,
+        )
+        management.incident_routing_team = AAZStrArg(
+            options=["incident-routing-team"],
+            nullable=True,
+        )
+        management.manifest_owners = AAZListArg(
+            options=["manifest-owners"],
+            nullable=True,
+        )
+        management.pc_code = AAZStrArg(
+            options=["pc-code"],
+            help="The profit center code for the subscription.",
+            nullable=True,
+        )
+        management.profit_center_program_id = AAZStrArg(
+            options=["profit-center-program-id"],
+            help="The profit center program id for the subscription.",
+            nullable=True,
+        )
+        management.resource_access_policy = AAZStrArg(
+            options=["resource-access-policy"],
+            nullable=True,
+            enum={"AcisActionAllowed": "AcisActionAllowed", "AcisReadAllowed": "AcisReadAllowed", "NotSpecified": "NotSpecified"},
+        )
+        management.resource_access_roles = AAZListArg(
+            options=["resource-access-roles"],
+            nullable=True,
+        )
+        management.schema_owners = AAZListArg(
+            options=["schema-owners"],
+            nullable=True,
+        )
+        management.service_tree_infos = AAZListArg(
+            options=["service-tree-infos"],
+            nullable=True,
+        )
+
+        authorization_owners = cls._args_schema.management.authorization_owners
+        authorization_owners.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        canary_manifest_owners = cls._args_schema.management.canary_manifest_owners
+        canary_manifest_owners.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        error_response_message_options = cls._args_schema.management.error_response_message_options
+        error_response_message_options.server_failure_response_message_type = AAZStrArg(
+            options=["server-failure-response-message-type"],
+            help="Type of server failure response message.",
+            nullable=True,
+            enum={"NotSpecified": "NotSpecified", "OutageReporting": "OutageReporting"},
+        )
+
+        expedited_rollout_metadata = cls._args_schema.management.expedited_rollout_metadata
+        expedited_rollout_metadata.enabled = AAZBoolArg(
+            options=["enabled"],
+            help="Expedited rollout enabled?",
+            nullable=True,
+        )
+        expedited_rollout_metadata.expedited_rollout_intent = AAZStrArg(
+            options=["expedited-rollout-intent"],
+            help="Expedited rollout intent.",
+            nullable=True,
+            enum={"Hotfix": "Hotfix", "NotSpecified": "NotSpecified"},
+        )
+
+        expedited_rollout_submitters = cls._args_schema.management.expedited_rollout_submitters
+        expedited_rollout_submitters.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        feature_approval_claims = cls._args_schema.management.feature_approval_claims
+        feature_approval_claims.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        feature_management_owners = cls._args_schema.management.feature_management_owners
+        feature_management_owners.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        manifest_owners = cls._args_schema.management.manifest_owners
+        manifest_owners.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        resource_access_roles = cls._args_schema.management.resource_access_roles
+        resource_access_roles.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.management.resource_access_roles.Element
+        _element.actions = AAZListArg(
+            options=["actions"],
+            nullable=True,
+        )
+        _element.allowed_group_claims = AAZListArg(
+            options=["allowed-group-claims"],
+            nullable=True,
+        )
+
+        actions = cls._args_schema.management.resource_access_roles.Element.actions
+        actions.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        allowed_group_claims = cls._args_schema.management.resource_access_roles.Element.allowed_group_claims
+        allowed_group_claims.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        schema_owners = cls._args_schema.management.schema_owners
+        schema_owners.Element = AAZStrArg(
+            nullable=True,
+        )
+
+        service_tree_infos = cls._args_schema.management.service_tree_infos
+        service_tree_infos.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.management.service_tree_infos.Element
+        _element.component_id = AAZStrArg(
+            options=["component-id"],
+            nullable=True,
+        )
+        _element.readiness = AAZStrArg(
+            options=["readiness"],
+            nullable=True,
+            enum={"ClosingDown": "ClosingDown", "Deprecated": "Deprecated", "GA": "GA", "InDevelopment": "InDevelopment", "InternalOnly": "InternalOnly", "PrivatePreview": "PrivatePreview", "PublicPreview": "PublicPreview", "RemovedFromARM": "RemovedFromARM", "Retired": "Retired"},
+        )
+        _element.service_id = AAZStrArg(
+            options=["service-id"],
+            nullable=True,
+        )
+
         management_group_global_notification_endpoints = cls._args_schema.management_group_global_notification_endpoints
         management_group_global_notification_endpoints.Element = AAZObjectArg(
             nullable=True,
         )
         cls._build_args_resource_provider_endpoint_update(management_group_global_notification_endpoints.Element)
+
+        metadata = cls._args_schema.metadata
+        metadata.Element = AAZAnyTypeArg(
+            nullable=True,
+        )
 
         notification_settings = cls._args_schema.notification_settings
         notification_settings.subscriber_settings = AAZListArg(
@@ -699,7 +732,6 @@ class Update(AAZCommand):
         )
         third_party_provider_authorization.managed_by_tenant_id = AAZStrArg(
             options=["managed-by-tenant-id"],
-            help="The managed by tenant ID.",
             nullable=True,
         )
 
@@ -714,6 +746,18 @@ class Update(AAZCommand):
         )
         _element.role_definition_id = AAZStrArg(
             options=["role-definition-id"],
+        )
+
+        request_header_options = cls._args_schema.request_header_options
+        request_header_options.opt_in_headers = AAZStrArg(
+            options=["opt-in-headers"],
+            nullable=True,
+            enum={"ClientGroupMembership": "ClientGroupMembership", "ClientPrincipalNameEncoded": "ClientPrincipalNameEncoded", "MSIResourceIdEncoded": "MSIResourceIdEncoded", "ManagementGroupAncestorsEncoded": "ManagementGroupAncestorsEncoded", "NotSpecified": "NotSpecified", "PrivateLinkId": "PrivateLinkId", "PrivateLinkResourceId": "PrivateLinkResourceId", "PrivateLinkVnetTrafficTag": "PrivateLinkVnetTrafficTag", "ResourceGroupLocation": "ResourceGroupLocation", "SignedAuxiliaryTokens": "SignedAuxiliaryTokens", "SignedUserToken": "SignedUserToken", "UnboundedClientGroupMembership": "UnboundedClientGroupMembership"},
+        )
+        request_header_options.opt_out_headers = AAZStrArg(
+            options=["opt-out-headers"],
+            nullable=True,
+            enum={"NotSpecified": "NotSpecified", "SystemDataCreatedByLastModifiedBy": "SystemDataCreatedByLastModifiedBy"},
         )
 
         required_features = cls._args_schema.required_features
@@ -789,13 +833,37 @@ class Update(AAZCommand):
         _element = cls._args_schema.services.Element
         _element.service_name = AAZStrArg(
             options=["service-name"],
-            help="The service name.",
             nullable=True,
         )
         _element.status = AAZStrArg(
             options=["status"],
             nullable=True,
             enum={"Active": "Active", "Inactive": "Inactive"},
+        )
+
+        subscription_lifecycle_notification_specifications = cls._args_schema.subscription_lifecycle_notification_specifications
+        subscription_lifecycle_notification_specifications.soft_delete_ttl = AAZDurationArg(
+            options=["soft-delete-ttl"],
+            nullable=True,
+        )
+        subscription_lifecycle_notification_specifications.subscription_state_override_actions = AAZListArg(
+            options=["subscription-state-override-actions"],
+            nullable=True,
+        )
+
+        subscription_state_override_actions = cls._args_schema.subscription_lifecycle_notification_specifications.subscription_state_override_actions
+        subscription_state_override_actions.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.subscription_lifecycle_notification_specifications.subscription_state_override_actions.Element
+        _element.action = AAZStrArg(
+            options=["action"],
+            enum={"BillingCancellation": "BillingCancellation", "DeleteAllResources": "DeleteAllResources", "NoOp": "NoOp", "NotDefined": "NotDefined", "SoftDeleteAllResources": "SoftDeleteAllResources", "UndoSoftDelete": "UndoSoftDelete"},
+        )
+        _element.state = AAZStrArg(
+            options=["state"],
+            enum={"Deleted": "Deleted", "Registered": "Registered", "Suspended": "Suspended", "SuspendedToDeleted": "SuspendedToDeleted", "SuspendedToRegistered": "SuspendedToRegistered", "SuspendedToUnregistered": "SuspendedToUnregistered", "SuspendedToWarned": "SuspendedToWarned", "Unregistered": "Unregistered", "Warned": "Warned", "WarnedToDeleted": "WarnedToDeleted", "WarnedToRegistered": "WarnedToRegistered", "WarnedToSuspended": "WarnedToSuspended", "WarnedToUnregistered": "WarnedToUnregistered"},
         )
 
         template_deployment_options = cls._args_schema.template_deployment_options
@@ -812,55 +880,6 @@ class Update(AAZCommand):
         preflight_options.Element = AAZStrArg(
             nullable=True,
             enum={"ContinueDeploymentOnFailure": "ContinueDeploymentOnFailure", "DefaultValidationOnly": "DefaultValidationOnly", "None": "None"},
-        )
-
-        # define Arg Group "RequestHeaderOptions"
-
-        _args_schema = cls._args_schema
-        _args_schema.opt_in_headers = AAZStrArg(
-            options=["--opt-in-headers"],
-            arg_group="RequestHeaderOptions",
-            help="The opt-in headers.",
-            nullable=True,
-            enum={"ClientGroupMembership": "ClientGroupMembership", "ClientPrincipalNameEncoded": "ClientPrincipalNameEncoded", "MSIResourceIdEncoded": "MSIResourceIdEncoded", "ManagementGroupAncestorsEncoded": "ManagementGroupAncestorsEncoded", "NotSpecified": "NotSpecified", "PrivateLinkId": "PrivateLinkId", "PrivateLinkResourceId": "PrivateLinkResourceId", "PrivateLinkVnetTrafficTag": "PrivateLinkVnetTrafficTag", "ResourceGroupLocation": "ResourceGroupLocation", "SignedAuxiliaryTokens": "SignedAuxiliaryTokens", "SignedUserToken": "SignedUserToken", "UnboundedClientGroupMembership": "UnboundedClientGroupMembership"},
-        )
-        _args_schema.opt_out_headers = AAZStrArg(
-            options=["--opt-out-headers"],
-            arg_group="RequestHeaderOptions",
-            help="The opt-out headers.",
-            nullable=True,
-            enum={"NotSpecified": "NotSpecified", "SystemDataCreatedByLastModifiedBy": "SystemDataCreatedByLastModifiedBy"},
-        )
-
-        # define Arg Group "SubscriptionLifecycleNotificationSpecifications"
-
-        _args_schema = cls._args_schema
-        _args_schema.soft_delete_ttl = AAZDurationArg(
-            options=["--soft-delete-ttl"],
-            arg_group="SubscriptionLifecycleNotificationSpecifications",
-            help="The soft delete time to live.",
-            nullable=True,
-        )
-        _args_schema.subscription_state_override_actions = AAZListArg(
-            options=["--override-actions", "--subscription-state-override-actions"],
-            arg_group="SubscriptionLifecycleNotificationSpecifications",
-            help="The subscription state override actions.",
-            nullable=True,
-        )
-
-        subscription_state_override_actions = cls._args_schema.subscription_state_override_actions
-        subscription_state_override_actions.Element = AAZObjectArg(
-            nullable=True,
-        )
-
-        _element = cls._args_schema.subscription_state_override_actions.Element
-        _element.action = AAZStrArg(
-            options=["action"],
-            enum={"BillingCancellation": "BillingCancellation", "DeleteAllResources": "DeleteAllResources", "NoOp": "NoOp", "NotDefined": "NotDefined", "SoftDeleteAllResources": "SoftDeleteAllResources", "UndoSoftDelete": "UndoSoftDelete"},
-        )
-        _element.state = AAZStrArg(
-            options=["state"],
-            enum={"Deleted": "Deleted", "Registered": "Registered", "Suspended": "Suspended", "SuspendedToDeleted": "SuspendedToDeleted", "SuspendedToRegistered": "SuspendedToRegistered", "SuspendedToUnregistered": "SuspendedToUnregistered", "SuspendedToWarned": "SuspendedToWarned", "Unregistered": "Unregistered", "Warned": "Warned", "WarnedToDeleted": "WarnedToDeleted", "WarnedToRegistered": "WarnedToRegistered", "WarnedToSuspended": "WarnedToSuspended", "WarnedToUnregistered": "WarnedToUnregistered"},
         )
         return cls._args_schema
 
@@ -1156,7 +1175,7 @@ class Update(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }
@@ -1251,7 +1270,7 @@ class Update(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }
@@ -1318,19 +1337,22 @@ class Update(AAZCommand):
                 properties.set_prop("crossTenantTokenValidation", AAZStrType, ".cross_tenant_token_validation")
                 properties.set_prop("customManifestVersion", AAZStrType, ".custom_manifest_version")
                 properties.set_prop("dstsConfiguration", AAZObjectType, ".dsts_configuration")
+                properties.set_prop("enablePresetResourceTypes", AAZBoolType, ".enable_preset_resource_types")
                 properties.set_prop("enableTenantLinkedNotification", AAZBoolType, ".enable_tenant_linked_notification", typ_kwargs={"nullable": True})
-                properties.set_prop("featuresRule", AAZObjectType)
+                properties.set_prop("featuresRule", AAZObjectType, ".features_rule")
                 properties.set_prop("globalNotificationEndpoints", AAZListType, ".global_notification_endpoints")
                 properties.set_prop("legacyNamespace", AAZStrType, ".legacy_namespace")
                 properties.set_prop("legacyRegistrations", AAZListType, ".legacy_registrations")
+                properties.set_prop("lifecycleInfo", AAZObjectType, ".lifecycle_info")
                 properties.set_prop("linkedNotificationRules", AAZListType, ".linked_notification_rules")
-                properties.set_prop("management", AAZObjectType)
+                properties.set_prop("management", AAZObjectType, ".management")
                 properties.set_prop("managementGroupGlobalNotificationEndpoints", AAZListType, ".management_group_global_notification_endpoints")
-                properties.set_prop("metadata", AAZFreeFormDictType, ".metadata")
+                properties.set_prop("metadata", AAZDictType, ".metadata")
                 properties.set_prop("namespace", AAZStrType, ".namespace")
                 properties.set_prop("notificationOptions", AAZStrType, ".notification_options")
                 properties.set_prop("notificationSettings", AAZObjectType, ".notification_settings")
                 properties.set_prop("notifications", AAZListType, ".notifications")
+                properties.set_prop("oboSubscriptionId", AAZStrType, ".obo_subscription_id")
                 properties.set_prop("optionalFeatures", AAZListType, ".optional_features")
                 properties.set_prop("privateResourceProviderConfiguration", AAZObjectType, ".private_resource_provider_configuration")
                 properties.set_prop("providerAuthentication", AAZObjectType, ".provider_authentication")
@@ -1338,7 +1360,7 @@ class Update(AAZCommand):
                 properties.set_prop("providerHubMetadata", AAZObjectType, ".provider_hub_metadata")
                 properties.set_prop("providerType", AAZStrType, ".provider_type")
                 properties.set_prop("providerVersion", AAZStrType, ".provider_version")
-                properties.set_prop("requestHeaderOptions", AAZObjectType)
+                properties.set_prop("requestHeaderOptions", AAZObjectType, ".request_header_options")
                 properties.set_prop("requiredFeatures", AAZListType, ".required_features")
                 properties.set_prop("resourceGroupLockOptionDuringMove", AAZObjectType, ".resource_group_lock_option_during_move")
                 properties.set_prop("resourceHydrationAccounts", AAZListType, ".resource_hydration_accounts")
@@ -1346,7 +1368,7 @@ class Update(AAZCommand):
                 properties.set_prop("responseOptions", AAZObjectType, ".response_options")
                 properties.set_prop("serviceName", AAZStrType, ".service_name")
                 properties.set_prop("services", AAZListType, ".services")
-                properties.set_prop("subscriptionLifecycleNotificationSpecifications", AAZObjectType)
+                properties.set_prop("subscriptionLifecycleNotificationSpecifications", AAZObjectType, ".subscription_lifecycle_notification_specifications")
                 properties.set_prop("templateDeploymentOptions", AAZObjectType, ".template_deployment_options")
                 _UpdateHelper._build_schema_token_auth_configuration_update(properties.set_prop("tokenAuthConfiguration", AAZObjectType, ".token_auth_configuration"))
 
@@ -1381,6 +1403,17 @@ class Update(AAZCommand):
             if legacy_registrations is not None:
                 legacy_registrations.set_elements(AAZStrType, ".")
 
+            lifecycle_info = _builder.get(".properties.lifecycleInfo")
+            if lifecycle_info is not None:
+                lifecycle_info.set_prop("allowedSubscriptions", AAZListType, ".allowed_subscriptions")
+                lifecycle_info.set_prop("isolationType", AAZStrType, ".isolation_type")
+                lifecycle_info.set_prop("lifecycleStage", AAZStrType, ".lifecycle_stage")
+                lifecycle_info.set_prop("partnerCategory", AAZStrType, ".partner_category")
+
+            allowed_subscriptions = _builder.get(".properties.lifecycleInfo.allowedSubscriptions")
+            if allowed_subscriptions is not None:
+                allowed_subscriptions.set_elements(AAZStrType, ".")
+
             linked_notification_rules = _builder.get(".properties.linkedNotificationRules")
             if linked_notification_rules is not None:
                 linked_notification_rules.set_elements(AAZObjectType, ".")
@@ -1412,6 +1445,8 @@ class Update(AAZCommand):
                 management.set_prop("errorResponseMessageOptions", AAZObjectType, ".error_response_message_options")
                 management.set_prop("expeditedRolloutMetadata", AAZObjectType, ".expedited_rollout_metadata")
                 management.set_prop("expeditedRolloutSubmitters", AAZListType, ".expedited_rollout_submitters")
+                management.set_prop("featureApprovalClaims", AAZListType, ".feature_approval_claims")
+                management.set_prop("featureManagementOwners", AAZListType, ".feature_management_owners")
                 management.set_prop("incidentContactEmail", AAZStrType, ".incident_contact_email")
                 management.set_prop("incidentRoutingService", AAZStrType, ".incident_routing_service")
                 management.set_prop("incidentRoutingTeam", AAZStrType, ".incident_routing_team")
@@ -1443,6 +1478,14 @@ class Update(AAZCommand):
             expedited_rollout_submitters = _builder.get(".properties.management.expeditedRolloutSubmitters")
             if expedited_rollout_submitters is not None:
                 expedited_rollout_submitters.set_elements(AAZStrType, ".")
+
+            feature_approval_claims = _builder.get(".properties.management.featureApprovalClaims")
+            if feature_approval_claims is not None:
+                feature_approval_claims.set_elements(AAZStrType, ".")
+
+            feature_management_owners = _builder.get(".properties.management.featureManagementOwners")
+            if feature_management_owners is not None:
+                feature_management_owners.set_elements(AAZStrType, ".")
 
             manifest_owners = _builder.get(".properties.management.manifestOwners")
             if manifest_owners is not None:
@@ -1485,7 +1528,7 @@ class Update(AAZCommand):
 
             metadata = _builder.get(".properties.metadata")
             if metadata is not None:
-                metadata.set_anytype_elements(".")
+                metadata.set_elements(AAZAnyType, ".")
 
             notification_settings = _builder.get(".properties.notificationSettings")
             if notification_settings is not None:
@@ -1788,6 +1831,9 @@ class _UpdateHelper:
         properties.dsts_configuration = AAZObjectType(
             serialized_name="dstsConfiguration",
         )
+        properties.enable_preset_resource_types = AAZBoolType(
+            serialized_name="enablePresetResourceTypes",
+        )
         properties.enable_tenant_linked_notification = AAZBoolType(
             serialized_name="enableTenantLinkedNotification",
             nullable=True,
@@ -1804,6 +1850,9 @@ class _UpdateHelper:
         properties.legacy_registrations = AAZListType(
             serialized_name="legacyRegistrations",
         )
+        properties.lifecycle_info = AAZObjectType(
+            serialized_name="lifecycleInfo",
+        )
         properties.linked_notification_rules = AAZListType(
             serialized_name="linkedNotificationRules",
         )
@@ -1811,7 +1860,7 @@ class _UpdateHelper:
         properties.management_group_global_notification_endpoints = AAZListType(
             serialized_name="managementGroupGlobalNotificationEndpoints",
         )
-        properties.metadata = AAZFreeFormDictType()
+        properties.metadata = AAZDictType()
         properties.namespace = AAZStrType()
         properties.notification_options = AAZStrType(
             serialized_name="notificationOptions",
@@ -1820,6 +1869,9 @@ class _UpdateHelper:
             serialized_name="notificationSettings",
         )
         properties.notifications = AAZListType()
+        properties.obo_subscription_id = AAZStrType(
+            serialized_name="oboSubscriptionId",
+        )
         properties.optional_features = AAZListType(
             serialized_name="optionalFeatures",
         )
@@ -1918,6 +1970,23 @@ class _UpdateHelper:
         legacy_registrations = _schema_provider_registration_read.properties.legacy_registrations
         legacy_registrations.Element = AAZStrType()
 
+        lifecycle_info = _schema_provider_registration_read.properties.lifecycle_info
+        lifecycle_info.allowed_subscriptions = AAZListType(
+            serialized_name="allowedSubscriptions",
+        )
+        lifecycle_info.isolation_type = AAZStrType(
+            serialized_name="isolationType",
+        )
+        lifecycle_info.lifecycle_stage = AAZStrType(
+            serialized_name="lifecycleStage",
+        )
+        lifecycle_info.partner_category = AAZStrType(
+            serialized_name="partnerCategory",
+        )
+
+        allowed_subscriptions = _schema_provider_registration_read.properties.lifecycle_info.allowed_subscriptions
+        allowed_subscriptions.Element = AAZStrType()
+
         linked_notification_rules = _schema_provider_registration_read.properties.linked_notification_rules
         linked_notification_rules.Element = AAZObjectType()
 
@@ -1963,6 +2032,12 @@ class _UpdateHelper:
         )
         management.expedited_rollout_submitters = AAZListType(
             serialized_name="expeditedRolloutSubmitters",
+        )
+        management.feature_approval_claims = AAZListType(
+            serialized_name="featureApprovalClaims",
+        )
+        management.feature_management_owners = AAZListType(
+            serialized_name="featureManagementOwners",
         )
         management.incident_contact_email = AAZStrType(
             serialized_name="incidentContactEmail",
@@ -2015,6 +2090,12 @@ class _UpdateHelper:
         expedited_rollout_submitters = _schema_provider_registration_read.properties.management.expedited_rollout_submitters
         expedited_rollout_submitters.Element = AAZStrType()
 
+        feature_approval_claims = _schema_provider_registration_read.properties.management.feature_approval_claims
+        feature_approval_claims.Element = AAZStrType()
+
+        feature_management_owners = _schema_provider_registration_read.properties.management.feature_management_owners
+        feature_management_owners.Element = AAZStrType()
+
         manifest_owners = _schema_provider_registration_read.properties.management.manifest_owners
         manifest_owners.Element = AAZStrType()
 
@@ -2051,6 +2132,9 @@ class _UpdateHelper:
         management_group_global_notification_endpoints = _schema_provider_registration_read.properties.management_group_global_notification_endpoints
         management_group_global_notification_endpoints.Element = AAZObjectType()
         cls._build_schema_resource_provider_endpoint_read(management_group_global_notification_endpoints.Element)
+
+        metadata = _schema_provider_registration_read.properties.metadata
+        metadata.Element = AAZAnyType()
 
         notification_settings = _schema_provider_registration_read.properties.notification_settings
         notification_settings.subscriber_settings = AAZListType(

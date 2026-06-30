@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub operation",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage operation with providerhub.
+    """Manage Operation
     """
     pass
 

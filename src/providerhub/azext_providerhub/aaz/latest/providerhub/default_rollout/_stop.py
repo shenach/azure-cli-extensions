@@ -16,15 +16,12 @@ from azure.cli.core.aaz import *
 )
 class Stop(AAZCommand):
     """Stops or cancels the rollout, if in progress.
-
-    :example: default-rollout stop
-        az providerhub default-rollout stop --provider-namespace "{providerNamespace}" --rollout-name "{defaultRolloutName}"
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/defaultrollouts/{}/stop", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/defaultrollouts/{}/stop", "2026-02-01-preview"],
         ]
     }
 
@@ -56,7 +53,7 @@ class Stop(AAZCommand):
             required=True,
             id_part="child_name_1",
             fmt=AAZStrArgFormat(
-                pattern="^[-\w\._\(\)]+$",
+                pattern="^[-\\w\\._\\(\\)]+$",
                 max_length=260,
             ),
         )
@@ -123,7 +120,7 @@ class Stop(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }

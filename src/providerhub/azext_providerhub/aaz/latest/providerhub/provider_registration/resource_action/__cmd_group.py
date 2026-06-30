@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub provider-registration resource-action",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage resource action with providerhub.
+    """Manage Resource Action
     """
     pass
 

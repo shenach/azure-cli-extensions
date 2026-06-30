@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub provider-registration",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage provider registration with providerhub.
+    """Manage Provider Registration
     """
     pass
 

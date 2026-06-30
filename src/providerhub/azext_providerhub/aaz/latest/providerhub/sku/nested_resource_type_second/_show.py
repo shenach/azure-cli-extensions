@@ -16,15 +16,12 @@ from azure.cli.core.aaz import *
 )
 class Show(AAZCommand):
     """Get the sku details for the given resource type and sku name.
-
-    :example: sku nested-resource-type-second show
-        az providerhub sku nested-resource-type-second show --nested-resource-type-first "nestedResourceTypeFirst" --nested-resource-type-second "nestedResourceTypeSecond" --provider-namespace "{providerNamespace}" --resource-type "{resourceType}" --sku "{skuName}"
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/skus/{}", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/skus/{}", "2026-02-01-preview"],
         ]
     }
 
@@ -45,13 +42,13 @@ class Show(AAZCommand):
 
         _args_schema = cls._args_schema
         _args_schema.nested_resource_type_first = AAZStrArg(
-            options=["--nested-first", "--nested-resource-type-first"],
+            options=["--nested-resource-type-first"],
             help="The first child resource type.",
             required=True,
             id_part="child_name_2",
         )
         _args_schema.nested_resource_type_second = AAZStrArg(
-            options=["--nested-second", "--nested-resource-type-second"],
+            options=["--nested-resource-type-second"],
             help="The second child resource type.",
             required=True,
             id_part="child_name_3",
@@ -153,7 +150,7 @@ class Show(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }

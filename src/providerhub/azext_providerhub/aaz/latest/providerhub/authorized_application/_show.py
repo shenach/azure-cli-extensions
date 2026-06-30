@@ -16,15 +16,12 @@ from azure.cli.core.aaz import *
 )
 class Show(AAZCommand):
     """Get the authorized application details.
-
-    :example: authorized-application show
-        az providerhub authorized-application show -n "8b51e6a7-7814-42bd-aa17-3fb1837b3b7a" --provider-namespace "{providerNamespace}"
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/authorizedapplications/{}", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/authorizedapplications/{}", "2026-02-01-preview"],
         ]
     }
 
@@ -123,7 +120,7 @@ class Show(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }
@@ -187,6 +184,9 @@ class Show(AAZCommand):
             data_authorizations.Element = AAZObjectType()
 
             _element = cls._schema_on_200.properties.data_authorizations.Element
+            _element.exclude_application_id_from_manifest = AAZBoolType(
+                serialized_name="excludeApplicationIdFromManifest",
+            )
             _element.resource_types = AAZListType(
                 serialized_name="resourceTypes",
             )

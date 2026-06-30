@@ -16,15 +16,12 @@ from azure.cli.core.aaz import *
 )
 class Create(AAZCommand):
     """Create the resource type skus in the given resource type.
-
-    :example: Create a sku in the resource type.
-        az providerhub sku nested-resource-type-third create --provider-namespace Microsoft.Contoso --resource-type testResourceType --nested-resource-type-first nestedResourceTypeFirst --nested-resource-type-second nestedResourceTypeSecond --nested-resource-type-third nestedResourceTypeThird --name testSku --sku-settings "[{name:freeSku,tier:Tier1,kind:Standard},{name:premiumSku,tier:Tier2,kind:Premium,costs:[{meter-id:xxx}]}]"
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/skus/{}", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/skus/{}", "2026-02-01-preview"],
         ]
     }
 
@@ -45,17 +42,17 @@ class Create(AAZCommand):
 
         _args_schema = cls._args_schema
         _args_schema.nested_resource_type_first = AAZStrArg(
-            options=["--nested-rt-first", "--nested-resource-type-first"],
+            options=["--nested-resource-type-first"],
             help="The first child resource type.",
             required=True,
         )
         _args_schema.nested_resource_type_second = AAZStrArg(
-            options=["--nested-rt-second", "--nested-resource-type-second"],
+            options=["--nested-resource-type-second"],
             help="The second child resource type.",
             required=True,
         )
         _args_schema.nested_resource_type_third = AAZStrArg(
-            options=["--nested-rt-third", "--nested-resource-type-third"],
+            options=["--nested-resource-type-third"],
             help="The third child resource type.",
             required=True,
         )
@@ -173,7 +170,8 @@ class Create(AAZCommand):
         )
         _element.type = AAZStrArg(
             options=["type"],
-            enum={"ArcZone": "ArcZone", "EdgeZone": "EdgeZone", "NotSpecified": "NotSpecified"},
+            help="The type.",
+            enum={"ArcZone": "ArcZone", "CustomLocation": "CustomLocation", "EdgeZone": "EdgeZone", "NotSpecified": "NotSpecified"},
         )
         _element.zone_details = AAZListArg(
             options=["zone-details"],
@@ -321,7 +319,7 @@ class Create(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }

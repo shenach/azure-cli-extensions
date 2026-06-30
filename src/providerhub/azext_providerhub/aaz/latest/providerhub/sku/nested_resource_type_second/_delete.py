@@ -17,15 +17,12 @@ from azure.cli.core.aaz import *
 )
 class Delete(AAZCommand):
     """Delete a resource type sku.
-
-    :example: sku nested-resource-type-second delete
-        az providerhub sku nested-resource-type-second delete -y --nested-resource-type-first "nestedResourceTypeFirst" --nested-resource-type-second "nestedResourceTypeSecond" --provider-namespace "{providerNamespace}" --resource-type "{resourceType}" --sku "{skuName}"
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/skus/{}", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/resourcetyperegistrations/{}/skus/{}", "2026-02-01-preview"],
         ]
     }
 
@@ -46,13 +43,13 @@ class Delete(AAZCommand):
 
         _args_schema = cls._args_schema
         _args_schema.nested_resource_type_first = AAZStrArg(
-            options=["--nested-first", "--nested-resource-type-first"],
+            options=["--nested-resource-type-first"],
             help="The first child resource type.",
             required=True,
             id_part="child_name_2",
         )
         _args_schema.nested_resource_type_second = AAZStrArg(
-            options=["--nested-second", "--nested-resource-type-second"],
+            options=["--nested-resource-type-second"],
             help="The second child resource type.",
             required=True,
             id_part="child_name_3",
@@ -152,7 +149,7 @@ class Delete(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }

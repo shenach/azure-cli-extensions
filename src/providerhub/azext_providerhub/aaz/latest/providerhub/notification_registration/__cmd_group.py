@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub notification-registration",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage notification registration with providerhub.
+    """Manage Notification Registration
     """
     pass
 

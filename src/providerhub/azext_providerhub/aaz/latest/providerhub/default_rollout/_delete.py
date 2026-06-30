@@ -17,15 +17,12 @@ from azure.cli.core.aaz import *
 )
 class Delete(AAZCommand):
     """Delete the rollout resource. Rollout must be in terminal state.
-
-    :example: default-rollout delete
-        az providerhub default-rollout delete -y --provider-namespace "{providerNamespace}" --rollout-name "{defaultRolloutName}"
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/defaultrollouts/{}", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/defaultrollouts/{}", "2026-02-01-preview"],
         ]
     }
 
@@ -57,7 +54,7 @@ class Delete(AAZCommand):
             required=True,
             id_part="child_name_1",
             fmt=AAZStrArgFormat(
-                pattern="^[-\w\._\(\)]+$",
+                pattern="^[-\\w\\._\\(\\)]+$",
                 max_length=260,
             ),
         )
@@ -126,7 +123,7 @@ class Delete(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }

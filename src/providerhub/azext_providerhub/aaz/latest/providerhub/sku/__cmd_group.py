@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub sku",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage sku with providerhub.
+    """Manage Sku
     """
     pass
 

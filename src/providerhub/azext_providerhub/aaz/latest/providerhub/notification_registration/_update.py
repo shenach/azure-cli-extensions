@@ -16,15 +16,12 @@ from azure.cli.core.aaz import *
 )
 class Update(AAZCommand):
     """Update a notification registration.
-
-    :example: notification-registration update
-        az providerhub notification-registration update --name "{notificationRegistration}" --included-events "*/write" "Microsoft.Contoso/employees/delete" --message-scope "RegisteredSubscriptions" --notification-endpoints [{notification-destination:/subscriptions/ac6bcfb5-3dc1-491f-95a6-646b89bf3e88/resourceGroups/mgmtexp-eastus/providers/Microsoft.EventHub/namespaces/unitedstates-mgmtexpint/eventhubs/armlinkednotifications,locations:[EastUS]}] --notification-mode "EventHub" --provider-namespace "{providerNamespace}"
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/notificationregistrations/{}", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/notificationregistrations/{}", "2026-02-01-preview"],
         ]
     }
 
@@ -65,26 +62,22 @@ class Update(AAZCommand):
         _args_schema.included_events = AAZListArg(
             options=["--included-events"],
             arg_group="Properties",
-            help="These are the events that the RP should be messaged on. The message format is in the form {RP Namespace}/{ResourceType}/{action}. The available actions are: write, delete and move/action.",
             nullable=True,
         )
         _args_schema.message_scope = AAZStrArg(
             options=["--message-scope"],
             arg_group="Properties",
-            help="Limits the messages that are sent to the RP. The default value is RegisteredSubscriptions. The available values are Global (all messages in Azure) and RegisteredSubscriptions (only messages in subscriptions registered by RP).",
             nullable=True,
             enum={"NotSpecified": "NotSpecified", "RegisteredSubscriptions": "RegisteredSubscriptions"},
         )
         _args_schema.notification_endpoints = AAZListArg(
             options=["--notification-endpoints"],
             arg_group="Properties",
-            help="These are the locations for the notification messages. Notifications will be sent to the region of the event resource's location (e.g. VM in East Us will send message to the specified endpoint in East US).",
             nullable=True,
         )
         _args_schema.notification_mode = AAZStrArg(
             options=["--notification-mode"],
             arg_group="Properties",
-            help="Determines how the notifications are sent to the RP. The two available modes are EventHub and Webhook.",
             nullable=True,
             enum={"EventHub": "EventHub", "NotSpecified": "NotSpecified", "WebHook": "WebHook"},
         )
@@ -193,7 +186,7 @@ class Update(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }
@@ -276,7 +269,7 @@ class Update(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }

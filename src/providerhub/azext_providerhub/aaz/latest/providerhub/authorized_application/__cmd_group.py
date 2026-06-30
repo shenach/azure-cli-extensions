@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub authorized-application",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage authorized application with providerhub.
+    """Manage Authorized Application
     """
     pass
 

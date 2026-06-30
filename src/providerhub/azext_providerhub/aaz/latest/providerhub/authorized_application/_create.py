@@ -16,15 +16,12 @@ from azure.cli.core.aaz import *
 )
 class Create(AAZCommand):
     """Create the authorized application.
-
-    :example: authorized-application create
-        az providerhub authorized-application create -n "8b51e6a7-7814-42bd-aa17-3fb1837b3b7a" --data-authorizations "[{{role:ServiceOwner}}]" --provider-namespace "{providerNamespace}"
     """
 
     _aaz_info = {
-        "version": "2024-04-01-preview",
+        "version": "2026-02-01-preview",
         "resources": [
-            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/authorizedapplications/{}", "2024-04-01-preview"],
+            ["mgmt-plane", "/subscriptions/{}/providers/microsoft.providerhub/providerregistrations/{}/authorizedapplications/{}", "2026-02-01-preview"],
         ]
     }
 
@@ -67,13 +64,16 @@ class Create(AAZCommand):
         _args_schema.provider_authorization = AAZObjectArg(
             options=["--provider-authorization"],
             arg_group="Properties",
-            help="The resource provider authorization.",
         )
 
         data_authorizations = cls._args_schema.data_authorizations
         data_authorizations.Element = AAZObjectArg()
 
         _element = cls._args_schema.data_authorizations.Element
+        _element.exclude_application_id_from_manifest = AAZBoolArg(
+            options=["exclude-application-id-from-manifest"],
+            help="Exclude application id from 'providerAuthorizations' section of manifest?",
+        )
         _element.resource_types = AAZListArg(
             options=["resource-types"],
             help="The resource types from the defined resource types in the provider namespace that the application can access. If no resource types are specified and the role is service owner, the default is * which is all resource types",
@@ -180,7 +180,7 @@ class Create(AAZCommand):
         def query_parameters(self):
             parameters = {
                 **self.serialize_query_param(
-                    "api-version", "2024-04-01-preview",
+                    "api-version", "2026-02-01-preview",
                     required=True,
                 ),
             }
@@ -218,6 +218,7 @@ class Create(AAZCommand):
 
             _elements = _builder.get(".properties.dataAuthorizations[]")
             if _elements is not None:
+                _elements.set_prop("excludeApplicationIdFromManifest", AAZBoolType, ".exclude_application_id_from_manifest")
                 _elements.set_prop("resourceTypes", AAZListType, ".resource_types")
                 _elements.set_prop("role", AAZStrType, ".role", typ_kwargs={"flags": {"required": True}})
 
@@ -281,6 +282,9 @@ class Create(AAZCommand):
             data_authorizations.Element = AAZObjectType()
 
             _element = cls._schema_on_200_201.properties.data_authorizations.Element
+            _element.exclude_application_id_from_manifest = AAZBoolType(
+                serialized_name="excludeApplicationIdFromManifest",
+            )
             _element.resource_types = AAZListType(
                 serialized_name="resourceTypes",
             )

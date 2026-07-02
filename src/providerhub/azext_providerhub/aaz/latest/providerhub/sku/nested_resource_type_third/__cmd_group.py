@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub sku nested-resource-type-third",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage Skus
+    """Gets the sku details for the given resource type and sku name.
     """
     pass
 

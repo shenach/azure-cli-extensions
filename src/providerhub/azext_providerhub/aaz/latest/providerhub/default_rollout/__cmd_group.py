@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub default-rollout",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage Default Rollout
+    """Manage default rollout with providerhub.
     """
     pass
 

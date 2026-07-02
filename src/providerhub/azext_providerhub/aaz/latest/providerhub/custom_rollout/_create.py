@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class Create(AAZCommand):
     """Create the rollout details.
+
+    :example: custom-rollout create
+        az providerhub custom-rollout create --provider-namespace "{providerNamespace}" --rollout-name "{customRolloutName}" --canary region="EastUS2EUAP" region="centraluseuap"
     """
 
     _aaz_info = {

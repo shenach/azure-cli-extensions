@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class Show(AAZCommand):
     """Get the provider registration details.
+
+    :example: ProviderRegistrations_Get
+        az providerhub provider-registration show --provider-namespace "{providerNamespace}"
     """
 
     _aaz_info = {

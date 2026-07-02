@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub resource-type-registration",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage Resource Type Registration
+    """Manage resource type registration with providerhub.
     """
     pass
 

@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class Checkin(AAZCommand):
     """Checkin the manifest.
+
+    :example: manifest checkin
+        az providerhub manifest checkin --provider-namespace "{providerNamespace}" --environment "Canary"
     """
 
     _aaz_info = {

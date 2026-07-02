@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class Show(AAZCommand):
     """Get the sku details for the given resource type and sku name.
+
+    :example: Skus_Get
+        az providerhub sku show --provider-namespace "{providerNamespace}" --resource-type "{resourceType}" --name "{skuName}"
     """
 
     _aaz_info = {

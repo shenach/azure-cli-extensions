@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class List(AAZCommand):
     """List the list of the resource types for the given provider.
+
+    :example: ResourceTypeRegistrations_ListByProviderRegistration
+        az providerhub resource-type-registration list --provider-namespace "{providerNamespace}"
     """
 
     _aaz_info = {

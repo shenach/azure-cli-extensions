@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class Show(AAZCommand):
     """Get the notification registration details.
+
+    :example: NotificationRegistrations_Get
+        az providerhub notification-registration show --name "{notificationRegistration}" --provider-namespace "{providerNamespace}"
     """
 
     _aaz_info = {

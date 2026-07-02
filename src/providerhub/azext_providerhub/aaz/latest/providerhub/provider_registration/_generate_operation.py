@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class GenerateOperation(AAZCommand):
     """Generates the operations api for the given provider.
+
+    :example: ProviderRegistrations_GenerateOperations
+        az providerhub provider-registration generate-operation --provider-namespace "{providerNamespace}"
     """
 
     _aaz_info = {

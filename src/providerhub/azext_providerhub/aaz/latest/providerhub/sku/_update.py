@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class Update(AAZCommand):
     """Update the resource type skus in the given resource type.
+
+    :example: Skus_CreateOrUpdate
+        az providerhub sku update --provider-namespace "{providerNamespace}" --resource-type "{resourceType}" --name "{skuName}" --sku-settings "[{name:freeSku,tier:Tier1,kind:Standard},{name:premiumSku,tier:Tier2,kind:Premium,costs:[{meter-id:xxx}]}]"
     """
 
     _aaz_info = {

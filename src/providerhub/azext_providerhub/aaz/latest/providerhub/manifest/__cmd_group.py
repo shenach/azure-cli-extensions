@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub manifest",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage Manifest
+    """Manage manifest with providerhub.
     """
     pass
 

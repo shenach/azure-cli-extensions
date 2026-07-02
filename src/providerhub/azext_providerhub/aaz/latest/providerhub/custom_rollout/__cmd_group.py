@@ -15,7 +15,7 @@ from azure.cli.core.aaz import *
     "providerhub custom-rollout",
 )
 class __CMDGroup(AAZCommandGroup):
-    """Manage Custom Rollout
+    """Manage custom rollout with providerhub.
     """
     pass
 

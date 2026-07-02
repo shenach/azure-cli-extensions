@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class List(AAZCommand):
     """List the list of skus for the given resource type.
+
+    :example: Skus_ListByResourceTypeRegistrations
+        az providerhub sku list --provider-namespace "{providerNamespace}" --resource-type "{resourceType}"
     """
 
     _aaz_info = {

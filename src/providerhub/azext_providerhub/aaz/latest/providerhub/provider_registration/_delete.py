@@ -18,7 +18,7 @@ from azure.cli.core.aaz import *
 class Delete(AAZCommand):
     """Delete a provider registration.
 
-    :example: ProviderRegistrations_Delete
+    :example: provider-registration delete
         az providerhub provider-registration delete -y --provider-namespace "{providerNamespace}"
     """
 

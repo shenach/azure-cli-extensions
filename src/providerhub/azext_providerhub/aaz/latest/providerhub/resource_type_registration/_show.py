@@ -17,7 +17,7 @@ from azure.cli.core.aaz import *
 class Show(AAZCommand):
     """Get a resource type details in the given subscription and provider.
 
-    :example: ResourceTypeRegistrations_Get
+    :example: resource-type-registration show
         az providerhub resource-type-registration show --provider-namespace "{providerNamespace}" --resource-type "extensionresourcetype"
     """
 

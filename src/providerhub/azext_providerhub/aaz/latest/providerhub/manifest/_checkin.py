@@ -55,10 +55,11 @@ class Checkin(AAZCommand):
 
         _args_schema = cls._args_schema
         _args_schema.baseline_arm_manifest_location = AAZStrArg(
-            options=["--baseline-arm-manifest-location"],
+            options=["--location", "--arm-manifest-location", "--baseline-arm-manifest-location"],
             arg_group="CheckinManifestParams",
             help="The baseline ARM manifest location supplied to the checkin manifest operation.",
             required=True,
+            default="EastUS2EUAP",
         )
         _args_schema.environment = AAZStrArg(
             options=["--environment"],

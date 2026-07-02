@@ -18,7 +18,7 @@ from azure.cli.core.aaz import *
 class Delete(AAZCommand):
     """Delete an operation.
 
-    :example: Operations_Delete
+    :example: operation delete
         az providerhub operation delete -y --provider-namespace "{providerNamespace}"
     """
 

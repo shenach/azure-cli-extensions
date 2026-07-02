@@ -72,6 +72,7 @@ class Update(AAZCommand):
         _args_schema.provider_authorization = AAZObjectArg(
             options=["--provider-authorization"],
             arg_group="Properties",
+            help="The resource provider authorization.",
             nullable=True,
         )
 

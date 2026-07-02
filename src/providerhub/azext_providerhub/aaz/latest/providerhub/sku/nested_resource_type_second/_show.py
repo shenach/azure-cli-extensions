@@ -17,7 +17,7 @@ from azure.cli.core.aaz import *
 class Show(AAZCommand):
     """Get the sku details for the given resource type and sku name.
 
-    :example: Skus_GetNestedResourceTypeSecond
+    :example: sku nested-resource-type-second show
         az providerhub sku nested-resource-type-second show --nested-resource-type-first "nestedResourceTypeFirst" --nested-resource-type-second "nestedResourceTypeSecond" --provider-namespace "{providerNamespace}" --resource-type "{resourceType}" --sku "{skuName}"
     """
 

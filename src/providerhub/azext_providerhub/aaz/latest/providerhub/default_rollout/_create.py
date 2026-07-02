@@ -16,6 +16,9 @@ from azure.cli.core.aaz import *
 )
 class Create(AAZCommand):
     """Create the rollout details.
+
+    :example: default-rollout create
+        az providerhub default-rollout create --provider-namespace "{providerNamespace}" --rollout-name "{defaultRolloutName}"
     """
 
     _aaz_info = {
@@ -60,51 +63,108 @@ class Create(AAZCommand):
         # define Arg Group "Properties"
 
         _args_schema = cls._args_schema
-        _args_schema.specification = AAZObjectArg(
-            options=["--specification"],
-            arg_group="Properties",
-        )
         _args_schema.status = AAZObjectArg(
             options=["--status"],
             arg_group="Properties",
         )
 
-        specification = cls._args_schema.specification
-        specification.auto_provision_config = AAZObjectArg(
-            options=["auto-provision-config"],
+        status = cls._args_schema.status
+        status.completed_regions = AAZListArg(
+            options=["completed-regions"],
         )
-        specification.canary = AAZObjectArg(
-            options=["canary"],
+        status.failed_or_skipped_regions = AAZDictArg(
+            options=["failed-or-skipped-regions"],
         )
-        specification.expedited_rollout = AAZObjectArg(
-            options=["expedited-rollout"],
+        status.manifest_checkin_status = AAZObjectArg(
+            options=["manifest-checkin-status"],
         )
-        specification.high_traffic = AAZObjectArg(
-            options=["high-traffic"],
+        status.next_traffic_region = AAZStrArg(
+            options=["next-traffic-region"],
+            enum={"Canary": "Canary", "HighTraffic": "HighTraffic", "LowTraffic": "LowTraffic", "MediumTraffic": "MediumTraffic", "None": "None", "NotSpecified": "NotSpecified", "RestOfTheWorldGroupOne": "RestOfTheWorldGroupOne", "RestOfTheWorldGroupTwo": "RestOfTheWorldGroupTwo"},
         )
-        specification.low_traffic = AAZObjectArg(
-            options=["low-traffic"],
+        status.next_traffic_region_scheduled_time = AAZDateTimeArg(
+            options=["next-traffic-region-scheduled-time"],
+            fmt=AAZDateTimeFormat(
+                protocol="iso",
+            ),
         )
-        specification.manifest_checkin_specification = AAZObjectArg(
-            options=["manifest-checkin-specification"],
-        )
-        specification.medium_traffic = AAZObjectArg(
-            options=["medium-traffic"],
-        )
-        specification.provider_registration = AAZObjectArg(
-            options=["provider-registration"],
-        )
-        specification.resource_type_registrations = AAZListArg(
-            options=["resource-type-registrations"],
-        )
-        specification.rest_of_the_world_group_one = AAZObjectArg(
-            options=["rest-of-the-world-group-one"],
-        )
-        specification.rest_of_the_world_group_two = AAZObjectArg(
-            options=["rest-of-the-world-group-two"],
+        status.subscription_reregistration_result = AAZStrArg(
+            options=["subscription-reregistration-result"],
+            enum={"ConditionalUpdate": "ConditionalUpdate", "Failed": "Failed", "ForcedUpdate": "ForcedUpdate", "NotApplicable": "NotApplicable"},
         )
 
-        auto_provision_config = cls._args_schema.specification.auto_provision_config
+        completed_regions = cls._args_schema.status.completed_regions
+        completed_regions.Element = AAZStrArg()
+
+        failed_or_skipped_regions = cls._args_schema.status.failed_or_skipped_regions
+        failed_or_skipped_regions.Element = AAZObjectArg()
+        cls._build_args_extended_error_info_create(failed_or_skipped_regions.Element)
+
+        manifest_checkin_status = cls._args_schema.status.manifest_checkin_status
+        manifest_checkin_status.commit_id = AAZStrArg(
+            options=["commit-id"],
+        )
+        manifest_checkin_status.is_checked_in = AAZBoolArg(
+            options=["is-checked-in"],
+            required=True,
+        )
+        manifest_checkin_status.pull_request = AAZStrArg(
+            options=["pull-request"],
+        )
+        manifest_checkin_status.status_message = AAZStrArg(
+            options=["status-message"],
+            required=True,
+        )
+
+        # define Arg Group "Specification"
+
+        _args_schema = cls._args_schema
+        _args_schema.auto_provision_config = AAZObjectArg(
+            options=["--auto-provision-config"],
+            arg_group="Specification",
+        )
+        _args_schema.canary = AAZObjectArg(
+            options=["--canary"],
+            arg_group="Specification",
+        )
+        _args_schema.expedited_rollout = AAZObjectArg(
+            options=["--expedited-rollout"],
+            arg_group="Specification",
+        )
+        _args_schema.high_traffic = AAZObjectArg(
+            options=["--high-traffic"],
+            arg_group="Specification",
+        )
+        _args_schema.low_traffic = AAZObjectArg(
+            options=["--low-traffic"],
+            arg_group="Specification",
+        )
+        _args_schema.manifest_checkin_specification = AAZObjectArg(
+            options=["--manifest-checkin-specification"],
+            arg_group="Specification",
+        )
+        _args_schema.medium_traffic = AAZObjectArg(
+            options=["--medium-traffic"],
+            arg_group="Specification",
+        )
+        _args_schema.provider_registration = AAZObjectArg(
+            options=["--provider-registration"],
+            arg_group="Specification",
+        )
+        _args_schema.resource_type_registrations = AAZListArg(
+            options=["--resource-type-registrations"],
+            arg_group="Specification",
+        )
+        _args_schema.rest_of_the_world_group_one = AAZObjectArg(
+            options=["--rest-of-the-world-group-one"],
+            arg_group="Specification",
+        )
+        _args_schema.rest_of_the_world_group_two = AAZObjectArg(
+            options=["--rest-of-the-world-group-two"],
+            arg_group="Specification",
+        )
+
+        auto_provision_config = cls._args_schema.auto_provision_config
         auto_provision_config.resource_graph = AAZBoolArg(
             options=["resource-graph"],
         )
@@ -112,7 +172,7 @@ class Create(AAZCommand):
             options=["storage"],
         )
 
-        canary = cls._args_schema.specification.canary
+        canary = cls._args_schema.canary
         canary.regions = AAZListArg(
             options=["regions"],
         )
@@ -120,19 +180,19 @@ class Create(AAZCommand):
             options=["skip-regions"],
         )
 
-        regions = cls._args_schema.specification.canary.regions
+        regions = cls._args_schema.canary.regions
         regions.Element = AAZStrArg()
 
-        skip_regions = cls._args_schema.specification.canary.skip_regions
+        skip_regions = cls._args_schema.canary.skip_regions
         skip_regions.Element = AAZStrArg()
 
-        expedited_rollout = cls._args_schema.specification.expedited_rollout
+        expedited_rollout = cls._args_schema.expedited_rollout
         expedited_rollout.enabled = AAZBoolArg(
             options=["enabled"],
             help="Indicates whether expedited rollout is enabled/disabled",
         )
 
-        high_traffic = cls._args_schema.specification.high_traffic
+        high_traffic = cls._args_schema.high_traffic
         high_traffic.regions = AAZListArg(
             options=["regions"],
         )
@@ -140,10 +200,10 @@ class Create(AAZCommand):
             options=["wait-duration"],
         )
 
-        regions = cls._args_schema.specification.high_traffic.regions
+        regions = cls._args_schema.high_traffic.regions
         regions.Element = AAZStrArg()
 
-        low_traffic = cls._args_schema.specification.low_traffic
+        low_traffic = cls._args_schema.low_traffic
         low_traffic.regions = AAZListArg(
             options=["regions"],
         )
@@ -151,10 +211,10 @@ class Create(AAZCommand):
             options=["wait-duration"],
         )
 
-        regions = cls._args_schema.specification.low_traffic.regions
+        regions = cls._args_schema.low_traffic.regions
         regions.Element = AAZStrArg()
 
-        manifest_checkin_specification = cls._args_schema.specification.manifest_checkin_specification
+        manifest_checkin_specification = cls._args_schema.manifest_checkin_specification
         manifest_checkin_specification.manifest_checkin_option = AAZStrArg(
             options=["manifest-checkin-option"],
             default="DoNotAttemptAutomaticManifestCheckin",
@@ -164,7 +224,7 @@ class Create(AAZCommand):
             options=["manifest-checkin-params"],
         )
 
-        manifest_checkin_params = cls._args_schema.specification.manifest_checkin_specification.manifest_checkin_params
+        manifest_checkin_params = cls._args_schema.manifest_checkin_specification.manifest_checkin_params
         manifest_checkin_params.baseline_arm_manifest_location = AAZStrArg(
             options=["baseline-arm-manifest-location"],
             help="The baseline ARM manifest location supplied to the checkin manifest operation.",
@@ -176,7 +236,7 @@ class Create(AAZCommand):
             required=True,
         )
 
-        medium_traffic = cls._args_schema.specification.medium_traffic
+        medium_traffic = cls._args_schema.medium_traffic
         medium_traffic.regions = AAZListArg(
             options=["regions"],
         )
@@ -184,10 +244,10 @@ class Create(AAZCommand):
             options=["wait-duration"],
         )
 
-        regions = cls._args_schema.specification.medium_traffic.regions
+        regions = cls._args_schema.medium_traffic.regions
         regions.Element = AAZStrArg()
 
-        provider_registration = cls._args_schema.specification.provider_registration
+        provider_registration = cls._args_schema.provider_registration
         provider_registration.kind = AAZStrArg(
             options=["kind"],
             help="Provider registration kind. This Metadata is also used by portal/tooling/etc to render different UX experiences for resources of the same type.",
@@ -329,10 +389,10 @@ class Create(AAZCommand):
         )
         cls._build_args_token_auth_configuration_create(provider_registration.token_auth_configuration)
 
-        capabilities = cls._args_schema.specification.provider_registration.capabilities
+        capabilities = cls._args_schema.provider_registration.capabilities
         capabilities.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.provider_registration.capabilities.Element
+        _element = cls._args_schema.provider_registration.capabilities.Element
         _element.effect = AAZStrArg(
             options=["effect"],
             required=True,
@@ -346,10 +406,10 @@ class Create(AAZCommand):
             options=["required-features"],
         )
 
-        required_features = cls._args_schema.specification.provider_registration.capabilities.Element.required_features
+        required_features = cls._args_schema.provider_registration.capabilities.Element.required_features
         required_features.Element = AAZStrArg()
 
-        dsts_configuration = cls._args_schema.specification.provider_registration.dsts_configuration
+        dsts_configuration = cls._args_schema.provider_registration.dsts_configuration
         dsts_configuration.service_dns_name = AAZStrArg(
             options=["service-dns-name"],
         )
@@ -358,21 +418,21 @@ class Create(AAZCommand):
             required=True,
         )
 
-        features_rule = cls._args_schema.specification.provider_registration.features_rule
+        features_rule = cls._args_schema.provider_registration.features_rule
         features_rule.required_features_policy = AAZStrArg(
             options=["required-features-policy"],
             required=True,
             enum={"All": "All", "Any": "Any"},
         )
 
-        global_notification_endpoints = cls._args_schema.specification.provider_registration.global_notification_endpoints
+        global_notification_endpoints = cls._args_schema.provider_registration.global_notification_endpoints
         global_notification_endpoints.Element = AAZObjectArg()
         cls._build_args_resource_provider_endpoint_create(global_notification_endpoints.Element)
 
-        legacy_registrations = cls._args_schema.specification.provider_registration.legacy_registrations
+        legacy_registrations = cls._args_schema.provider_registration.legacy_registrations
         legacy_registrations.Element = AAZStrArg()
 
-        lifecycle_info = cls._args_schema.specification.provider_registration.lifecycle_info
+        lifecycle_info = cls._args_schema.provider_registration.lifecycle_info
         lifecycle_info.allowed_subscriptions = AAZListArg(
             options=["allowed-subscriptions"],
             help="The list of allowed subscriptions for this resource provider.",
@@ -393,13 +453,13 @@ class Create(AAZCommand):
             enum={"FirstParty": "FirstParty", "ThirdParty": "ThirdParty"},
         )
 
-        allowed_subscriptions = cls._args_schema.specification.provider_registration.lifecycle_info.allowed_subscriptions
+        allowed_subscriptions = cls._args_schema.provider_registration.lifecycle_info.allowed_subscriptions
         allowed_subscriptions.Element = AAZStrArg()
 
-        linked_notification_rules = cls._args_schema.specification.provider_registration.linked_notification_rules
+        linked_notification_rules = cls._args_schema.provider_registration.linked_notification_rules
         linked_notification_rules.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.provider_registration.linked_notification_rules.Element
+        _element = cls._args_schema.provider_registration.linked_notification_rules.Element
         _element.actions = AAZListArg(
             options=["actions"],
         )
@@ -414,10 +474,10 @@ class Create(AAZCommand):
         )
         cls._build_args_token_auth_configuration_create(_element.token_auth_configuration)
 
-        actions = cls._args_schema.specification.provider_registration.linked_notification_rules.Element.actions
+        actions = cls._args_schema.provider_registration.linked_notification_rules.Element.actions
         actions.Element = AAZStrArg()
 
-        dsts_configuration = cls._args_schema.specification.provider_registration.linked_notification_rules.Element.dsts_configuration
+        dsts_configuration = cls._args_schema.provider_registration.linked_notification_rules.Element.dsts_configuration
         dsts_configuration.service_dns_name = AAZStrArg(
             options=["service-dns-name"],
         )
@@ -426,11 +486,11 @@ class Create(AAZCommand):
             required=True,
         )
 
-        endpoints = cls._args_schema.specification.provider_registration.linked_notification_rules.Element.endpoints
+        endpoints = cls._args_schema.provider_registration.linked_notification_rules.Element.endpoints
         endpoints.Element = AAZObjectArg()
         cls._build_args_resource_provider_endpoint_create(endpoints.Element)
 
-        management = cls._args_schema.specification.provider_registration.management
+        management = cls._args_schema.provider_registration.management
         management.authorization_owners = AAZListArg(
             options=["authorization-owners"],
         )
@@ -491,20 +551,20 @@ class Create(AAZCommand):
             options=["service-tree-infos"],
         )
 
-        authorization_owners = cls._args_schema.specification.provider_registration.management.authorization_owners
+        authorization_owners = cls._args_schema.provider_registration.management.authorization_owners
         authorization_owners.Element = AAZStrArg()
 
-        canary_manifest_owners = cls._args_schema.specification.provider_registration.management.canary_manifest_owners
+        canary_manifest_owners = cls._args_schema.provider_registration.management.canary_manifest_owners
         canary_manifest_owners.Element = AAZStrArg()
 
-        error_response_message_options = cls._args_schema.specification.provider_registration.management.error_response_message_options
+        error_response_message_options = cls._args_schema.provider_registration.management.error_response_message_options
         error_response_message_options.server_failure_response_message_type = AAZStrArg(
             options=["server-failure-response-message-type"],
             help="Type of server failure response message.",
             enum={"NotSpecified": "NotSpecified", "OutageReporting": "OutageReporting"},
         )
 
-        expedited_rollout_metadata = cls._args_schema.specification.provider_registration.management.expedited_rollout_metadata
+        expedited_rollout_metadata = cls._args_schema.provider_registration.management.expedited_rollout_metadata
         expedited_rollout_metadata.enabled = AAZBoolArg(
             options=["enabled"],
             help="Expedited rollout enabled?",
@@ -515,53 +575,53 @@ class Create(AAZCommand):
             enum={"Hotfix": "Hotfix", "NotSpecified": "NotSpecified"},
         )
 
-        expedited_rollout_submitters = cls._args_schema.specification.provider_registration.management.expedited_rollout_submitters
+        expedited_rollout_submitters = cls._args_schema.provider_registration.management.expedited_rollout_submitters
         expedited_rollout_submitters.Element = AAZStrArg()
 
-        feature_approval_claims = cls._args_schema.specification.provider_registration.management.feature_approval_claims
+        feature_approval_claims = cls._args_schema.provider_registration.management.feature_approval_claims
         feature_approval_claims.Element = AAZStrArg()
 
-        feature_management_owners = cls._args_schema.specification.provider_registration.management.feature_management_owners
+        feature_management_owners = cls._args_schema.provider_registration.management.feature_management_owners
         feature_management_owners.Element = AAZStrArg()
 
-        manifest_owners = cls._args_schema.specification.provider_registration.management.manifest_owners
+        manifest_owners = cls._args_schema.provider_registration.management.manifest_owners
         manifest_owners.Element = AAZStrArg()
 
-        resource_access_roles = cls._args_schema.specification.provider_registration.management.resource_access_roles
+        resource_access_roles = cls._args_schema.provider_registration.management.resource_access_roles
         resource_access_roles.Element = AAZObjectArg()
         cls._build_args_resource_access_role_create(resource_access_roles.Element)
 
-        schema_owners = cls._args_schema.specification.provider_registration.management.schema_owners
+        schema_owners = cls._args_schema.provider_registration.management.schema_owners
         schema_owners.Element = AAZStrArg()
 
-        service_tree_infos = cls._args_schema.specification.provider_registration.management.service_tree_infos
+        service_tree_infos = cls._args_schema.provider_registration.management.service_tree_infos
         service_tree_infos.Element = AAZObjectArg()
         cls._build_args_service_tree_info_create(service_tree_infos.Element)
 
-        management_group_global_notification_endpoints = cls._args_schema.specification.provider_registration.management_group_global_notification_endpoints
+        management_group_global_notification_endpoints = cls._args_schema.provider_registration.management_group_global_notification_endpoints
         management_group_global_notification_endpoints.Element = AAZObjectArg()
         cls._build_args_resource_provider_endpoint_create(management_group_global_notification_endpoints.Element)
 
-        metadata = cls._args_schema.specification.provider_registration.metadata
+        metadata = cls._args_schema.provider_registration.metadata
         metadata.Element = AAZAnyTypeArg()
 
-        notification_settings = cls._args_schema.specification.provider_registration.notification_settings
+        notification_settings = cls._args_schema.provider_registration.notification_settings
         notification_settings.subscriber_settings = AAZListArg(
             options=["subscriber-settings"],
         )
 
-        subscriber_settings = cls._args_schema.specification.provider_registration.notification_settings.subscriber_settings
+        subscriber_settings = cls._args_schema.provider_registration.notification_settings.subscriber_settings
         subscriber_settings.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.provider_registration.notification_settings.subscriber_settings.Element
+        _element = cls._args_schema.provider_registration.notification_settings.subscriber_settings.Element
         _element.filter_rules = AAZListArg(
             options=["filter-rules"],
         )
 
-        filter_rules = cls._args_schema.specification.provider_registration.notification_settings.subscriber_settings.Element.filter_rules
+        filter_rules = cls._args_schema.provider_registration.notification_settings.subscriber_settings.Element.filter_rules
         filter_rules.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.provider_registration.notification_settings.subscriber_settings.Element.filter_rules.Element
+        _element = cls._args_schema.provider_registration.notification_settings.subscriber_settings.Element.filter_rules.Element
         _element.endpoint_information = AAZListArg(
             options=["endpoint-information"],
         )
@@ -569,10 +629,10 @@ class Create(AAZCommand):
             options=["filter-query"],
         )
 
-        endpoint_information = cls._args_schema.specification.provider_registration.notification_settings.subscriber_settings.Element.filter_rules.Element.endpoint_information
+        endpoint_information = cls._args_schema.provider_registration.notification_settings.subscriber_settings.Element.filter_rules.Element.endpoint_information
         endpoint_information.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.provider_registration.notification_settings.subscriber_settings.Element.filter_rules.Element.endpoint_information.Element
+        _element = cls._args_schema.provider_registration.notification_settings.subscriber_settings.Element.filter_rules.Element.endpoint_information.Element
         _element.endpoint = AAZStrArg(
             options=["endpoint"],
         )
@@ -584,31 +644,31 @@ class Create(AAZCommand):
             options=["schema-version"],
         )
 
-        optional_features = cls._args_schema.specification.provider_registration.optional_features
+        optional_features = cls._args_schema.provider_registration.optional_features
         optional_features.Element = AAZStrArg()
 
-        private_resource_provider_configuration = cls._args_schema.specification.provider_registration.private_resource_provider_configuration
+        private_resource_provider_configuration = cls._args_schema.provider_registration.private_resource_provider_configuration
         private_resource_provider_configuration.allowed_subscriptions = AAZListArg(
             options=["allowed-subscriptions"],
         )
 
-        allowed_subscriptions = cls._args_schema.specification.provider_registration.private_resource_provider_configuration.allowed_subscriptions
+        allowed_subscriptions = cls._args_schema.provider_registration.private_resource_provider_configuration.allowed_subscriptions
         allowed_subscriptions.Element = AAZStrArg()
 
-        provider_authentication = cls._args_schema.specification.provider_registration.provider_authentication
+        provider_authentication = cls._args_schema.provider_registration.provider_authentication
         provider_authentication.allowed_audiences = AAZListArg(
             options=["allowed-audiences"],
             required=True,
         )
 
-        allowed_audiences = cls._args_schema.specification.provider_registration.provider_authentication.allowed_audiences
+        allowed_audiences = cls._args_schema.provider_registration.provider_authentication.allowed_audiences
         allowed_audiences.Element = AAZStrArg()
 
-        provider_authorizations = cls._args_schema.specification.provider_registration.provider_authorizations
+        provider_authorizations = cls._args_schema.provider_registration.provider_authorizations
         provider_authorizations.Element = AAZObjectArg()
         cls._build_args_resource_provider_authorization_create(provider_authorizations.Element)
 
-        provider_hub_metadata = cls._args_schema.specification.provider_registration.provider_hub_metadata
+        provider_hub_metadata = cls._args_schema.provider_registration.provider_hub_metadata
         provider_hub_metadata.direct_rp_role_definition_id = AAZStrArg(
             options=["direct-rp-role-definition-id"],
         )
@@ -628,20 +688,20 @@ class Create(AAZCommand):
             options=["third-party-provider-authorization"],
         )
 
-        provider_authentication = cls._args_schema.specification.provider_registration.provider_hub_metadata.provider_authentication
+        provider_authentication = cls._args_schema.provider_registration.provider_hub_metadata.provider_authentication
         provider_authentication.allowed_audiences = AAZListArg(
             options=["allowed-audiences"],
             required=True,
         )
 
-        allowed_audiences = cls._args_schema.specification.provider_registration.provider_hub_metadata.provider_authentication.allowed_audiences
+        allowed_audiences = cls._args_schema.provider_registration.provider_hub_metadata.provider_authentication.allowed_audiences
         allowed_audiences.Element = AAZStrArg()
 
-        provider_authorizations = cls._args_schema.specification.provider_registration.provider_hub_metadata.provider_authorizations
+        provider_authorizations = cls._args_schema.provider_registration.provider_hub_metadata.provider_authorizations
         provider_authorizations.Element = AAZObjectArg()
         cls._build_args_resource_provider_authorization_create(provider_authorizations.Element)
 
-        third_party_provider_authorization = cls._args_schema.specification.provider_registration.provider_hub_metadata.third_party_provider_authorization
+        third_party_provider_authorization = cls._args_schema.provider_registration.provider_hub_metadata.third_party_provider_authorization
         third_party_provider_authorization.authorizations = AAZListArg(
             options=["authorizations"],
         )
@@ -649,10 +709,10 @@ class Create(AAZCommand):
             options=["managed-by-tenant-id"],
         )
 
-        authorizations = cls._args_schema.specification.provider_registration.provider_hub_metadata.third_party_provider_authorization.authorizations
+        authorizations = cls._args_schema.provider_registration.provider_hub_metadata.third_party_provider_authorization.authorizations
         authorizations.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.provider_registration.provider_hub_metadata.third_party_provider_authorization.authorizations.Element
+        _element = cls._args_schema.provider_registration.provider_hub_metadata.third_party_provider_authorization.authorizations.Element
         _element.principal_id = AAZStrArg(
             options=["principal-id"],
             required=True,
@@ -662,7 +722,7 @@ class Create(AAZCommand):
             required=True,
         )
 
-        request_header_options = cls._args_schema.specification.provider_registration.request_header_options
+        request_header_options = cls._args_schema.provider_registration.request_header_options
         request_header_options.opt_in_headers = AAZStrArg(
             options=["opt-in-headers"],
             enum={"ClientGroupMembership": "ClientGroupMembership", "ClientPrincipalNameEncoded": "ClientPrincipalNameEncoded", "MSIResourceIdEncoded": "MSIResourceIdEncoded", "ManagementGroupAncestorsEncoded": "ManagementGroupAncestorsEncoded", "NotSpecified": "NotSpecified", "PrivateLinkId": "PrivateLinkId", "PrivateLinkResourceId": "PrivateLinkResourceId", "PrivateLinkVnetTrafficTag": "PrivateLinkVnetTrafficTag", "ResourceGroupLocation": "ResourceGroupLocation", "SignedAuxiliaryTokens": "SignedAuxiliaryTokens", "SignedUserToken": "SignedUserToken", "UnboundedClientGroupMembership": "UnboundedClientGroupMembership"},
@@ -672,20 +732,20 @@ class Create(AAZCommand):
             enum={"NotSpecified": "NotSpecified", "SystemDataCreatedByLastModifiedBy": "SystemDataCreatedByLastModifiedBy"},
         )
 
-        required_features = cls._args_schema.specification.provider_registration.required_features
+        required_features = cls._args_schema.provider_registration.required_features
         required_features.Element = AAZStrArg()
 
-        resource_group_lock_option_during_move = cls._args_schema.specification.provider_registration.resource_group_lock_option_during_move
+        resource_group_lock_option_during_move = cls._args_schema.provider_registration.resource_group_lock_option_during_move
         resource_group_lock_option_during_move.block_action_verb = AAZStrArg(
             options=["block-action-verb"],
             help="The action verb that will be blocked when the resource group is locked during move.",
             enum={"Action": "Action", "Delete": "Delete", "NotSpecified": "NotSpecified", "Read": "Read", "Unrecognized": "Unrecognized", "Write": "Write"},
         )
 
-        resource_hydration_accounts = cls._args_schema.specification.provider_registration.resource_hydration_accounts
+        resource_hydration_accounts = cls._args_schema.provider_registration.resource_hydration_accounts
         resource_hydration_accounts.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.provider_registration.resource_hydration_accounts.Element
+        _element = cls._args_schema.provider_registration.resource_hydration_accounts.Element
         _element.account_name = AAZStrArg(
             options=["account-name"],
         )
@@ -699,16 +759,16 @@ class Create(AAZCommand):
             options=["subscription-id"],
         )
 
-        response_options = cls._args_schema.specification.provider_registration.response_options
+        response_options = cls._args_schema.provider_registration.response_options
         response_options.service_client_options_type = AAZStrArg(
             options=["service-client-options-type"],
             enum={"DisableAutomaticDecompression": "DisableAutomaticDecompression", "NotSpecified": "NotSpecified"},
         )
 
-        services = cls._args_schema.specification.provider_registration.services
+        services = cls._args_schema.provider_registration.services
         services.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.provider_registration.services.Element
+        _element = cls._args_schema.provider_registration.services.Element
         _element.service_name = AAZStrArg(
             options=["service-name"],
         )
@@ -717,7 +777,7 @@ class Create(AAZCommand):
             enum={"Active": "Active", "Inactive": "Inactive"},
         )
 
-        subscription_lifecycle_notification_specifications = cls._args_schema.specification.provider_registration.subscription_lifecycle_notification_specifications
+        subscription_lifecycle_notification_specifications = cls._args_schema.provider_registration.subscription_lifecycle_notification_specifications
         subscription_lifecycle_notification_specifications.soft_delete_ttl = AAZDurationArg(
             options=["soft-delete-ttl"],
         )
@@ -725,11 +785,11 @@ class Create(AAZCommand):
             options=["subscription-state-override-actions"],
         )
 
-        subscription_state_override_actions = cls._args_schema.specification.provider_registration.subscription_lifecycle_notification_specifications.subscription_state_override_actions
+        subscription_state_override_actions = cls._args_schema.provider_registration.subscription_lifecycle_notification_specifications.subscription_state_override_actions
         subscription_state_override_actions.Element = AAZObjectArg()
         cls._build_args_subscription_state_override_action_create(subscription_state_override_actions.Element)
 
-        template_deployment_options = cls._args_schema.specification.provider_registration.template_deployment_options
+        template_deployment_options = cls._args_schema.provider_registration.template_deployment_options
         template_deployment_options.preflight_options = AAZListArg(
             options=["preflight-options"],
         )
@@ -737,15 +797,15 @@ class Create(AAZCommand):
             options=["preflight-supported"],
         )
 
-        preflight_options = cls._args_schema.specification.provider_registration.template_deployment_options.preflight_options
+        preflight_options = cls._args_schema.provider_registration.template_deployment_options.preflight_options
         preflight_options.Element = AAZStrArg(
             enum={"ContinueDeploymentOnFailure": "ContinueDeploymentOnFailure", "DefaultValidationOnly": "DefaultValidationOnly", "None": "None"},
         )
 
-        resource_type_registrations = cls._args_schema.specification.resource_type_registrations
+        resource_type_registrations = cls._args_schema.resource_type_registrations
         resource_type_registrations.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element
+        _element = cls._args_schema.resource_type_registrations.Element
         _element.kind = AAZStrArg(
             options=["kind"],
             help="Resource type registration kind. This Metadata is also used by portal/tooling/etc to render different UX experiences for resources of the same type.",
@@ -1023,10 +1083,10 @@ class Create(AAZCommand):
             options=["write-lock"],
         )
 
-        allowed_resource_names = cls._args_schema.specification.resource_type_registrations.Element.allowed_resource_names
+        allowed_resource_names = cls._args_schema.resource_type_registrations.Element.allowed_resource_names
         allowed_resource_names.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.allowed_resource_names.Element
+        _element = cls._args_schema.resource_type_registrations.Element.allowed_resource_names.Element
         _element.get_action_verb = AAZStrArg(
             options=["get-action-verb"],
             help="Get action verb.",
@@ -1036,16 +1096,16 @@ class Create(AAZCommand):
             help="Resource name.",
         )
 
-        allowed_template_deployment_reference_actions = cls._args_schema.specification.resource_type_registrations.Element.allowed_template_deployment_reference_actions
+        allowed_template_deployment_reference_actions = cls._args_schema.resource_type_registrations.Element.allowed_template_deployment_reference_actions
         allowed_template_deployment_reference_actions.Element = AAZStrArg()
 
-        allowed_unauthorized_actions = cls._args_schema.specification.resource_type_registrations.Element.allowed_unauthorized_actions
+        allowed_unauthorized_actions = cls._args_schema.resource_type_registrations.Element.allowed_unauthorized_actions
         allowed_unauthorized_actions.Element = AAZStrArg()
 
-        allowed_unauthorized_actions_extensions = cls._args_schema.specification.resource_type_registrations.Element.allowed_unauthorized_actions_extensions
+        allowed_unauthorized_actions_extensions = cls._args_schema.resource_type_registrations.Element.allowed_unauthorized_actions_extensions
         allowed_unauthorized_actions_extensions.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.allowed_unauthorized_actions_extensions.Element
+        _element = cls._args_schema.resource_type_registrations.Element.allowed_unauthorized_actions_extensions.Element
         _element.action = AAZStrArg(
             options=["action"],
         )
@@ -1054,10 +1114,10 @@ class Create(AAZCommand):
             enum={"DEFERRED_ACCESS_CHECK": "DEFERRED_ACCESS_CHECK", "LOW_PRIVILEGE": "LOW_PRIVILEGE", "NOT_SPECIFIED": "NOT_SPECIFIED", "RP_CONTRACT": "RP_CONTRACT"},
         )
 
-        api_profiles = cls._args_schema.specification.resource_type_registrations.Element.api_profiles
+        api_profiles = cls._args_schema.resource_type_registrations.Element.api_profiles
         api_profiles.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.api_profiles.Element
+        _element = cls._args_schema.resource_type_registrations.Element.api_profiles.Element
         _element.api_version = AAZStrArg(
             options=["api-version"],
             help="Api version.",
@@ -1067,10 +1127,10 @@ class Create(AAZCommand):
             help="Profile version.",
         )
 
-        async_timeout_rules = cls._args_schema.specification.resource_type_registrations.Element.async_timeout_rules
+        async_timeout_rules = cls._args_schema.resource_type_registrations.Element.async_timeout_rules
         async_timeout_rules.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.async_timeout_rules.Element
+        _element = cls._args_schema.resource_type_registrations.Element.async_timeout_rules.Element
         _element.action_name = AAZStrArg(
             options=["action-name"],
         )
@@ -1078,10 +1138,10 @@ class Create(AAZCommand):
             options=["timeout"],
         )
 
-        authorization_action_mappings = cls._args_schema.specification.resource_type_registrations.Element.authorization_action_mappings
+        authorization_action_mappings = cls._args_schema.resource_type_registrations.Element.authorization_action_mappings
         authorization_action_mappings.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.authorization_action_mappings.Element
+        _element = cls._args_schema.resource_type_registrations.Element.authorization_action_mappings.Element
         _element.desired = AAZStrArg(
             options=["desired"],
         )
@@ -1089,13 +1149,13 @@ class Create(AAZCommand):
             options=["original"],
         )
 
-        availability_zone_rule = cls._args_schema.specification.resource_type_registrations.Element.availability_zone_rule
+        availability_zone_rule = cls._args_schema.resource_type_registrations.Element.availability_zone_rule
         availability_zone_rule.availability_zone_policy = AAZStrArg(
             options=["availability-zone-policy"],
             enum={"MultiZoned": "MultiZoned", "NotSpecified": "NotSpecified", "SingleZoned": "SingleZoned"},
         )
 
-        capacity_rule = cls._args_schema.specification.resource_type_registrations.Element.capacity_rule
+        capacity_rule = cls._args_schema.resource_type_registrations.Element.capacity_rule
         capacity_rule.capacity_policy = AAZStrArg(
             options=["capacity-policy"],
             help="Capacity policy.",
@@ -1106,7 +1166,7 @@ class Create(AAZCommand):
             help="Sku alias",
         )
 
-        check_name_availability_specifications = cls._args_schema.specification.resource_type_registrations.Element.check_name_availability_specifications
+        check_name_availability_specifications = cls._args_schema.resource_type_registrations.Element.check_name_availability_specifications
         check_name_availability_specifications.enable_default_validation = AAZBoolArg(
             options=["enable-default-validation"],
         )
@@ -1114,19 +1174,19 @@ class Create(AAZCommand):
             options=["resource-types-with-custom-validation"],
         )
 
-        resource_types_with_custom_validation = cls._args_schema.specification.resource_type_registrations.Element.check_name_availability_specifications.resource_types_with_custom_validation
+        resource_types_with_custom_validation = cls._args_schema.resource_type_registrations.Element.check_name_availability_specifications.resource_types_with_custom_validation
         resource_types_with_custom_validation.Element = AAZStrArg()
 
-        common_api_versions = cls._args_schema.specification.resource_type_registrations.Element.common_api_versions
+        common_api_versions = cls._args_schema.resource_type_registrations.Element.common_api_versions
         common_api_versions.Element = AAZStrArg()
 
-        disallowed_action_verbs = cls._args_schema.specification.resource_type_registrations.Element.disallowed_action_verbs
+        disallowed_action_verbs = cls._args_schema.resource_type_registrations.Element.disallowed_action_verbs
         disallowed_action_verbs.Element = AAZStrArg()
 
-        disallowed_end_user_operations = cls._args_schema.specification.resource_type_registrations.Element.disallowed_end_user_operations
+        disallowed_end_user_operations = cls._args_schema.resource_type_registrations.Element.disallowed_end_user_operations
         disallowed_end_user_operations.Element = AAZStrArg()
 
-        dsts_configuration = cls._args_schema.specification.resource_type_registrations.Element.dsts_configuration
+        dsts_configuration = cls._args_schema.resource_type_registrations.Element.dsts_configuration
         dsts_configuration.service_dns_name = AAZStrArg(
             options=["service-dns-name"],
         )
@@ -1135,10 +1195,10 @@ class Create(AAZCommand):
             required=True,
         )
 
-        endpoints = cls._args_schema.specification.resource_type_registrations.Element.endpoints
+        endpoints = cls._args_schema.resource_type_registrations.Element.endpoints
         endpoints.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element
+        _element = cls._args_schema.resource_type_registrations.Element.endpoints.Element
         _element.api_version = AAZStrArg(
             options=["api-version"],
             help="Api version.",
@@ -1196,10 +1256,10 @@ class Create(AAZCommand):
             help="List of zones.",
         )
 
-        api_versions = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element.api_versions
+        api_versions = cls._args_schema.resource_type_registrations.Element.endpoints.Element.api_versions
         api_versions.Element = AAZStrArg()
 
-        dsts_configuration = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element.dsts_configuration
+        dsts_configuration = cls._args_schema.resource_type_registrations.Element.endpoints.Element.dsts_configuration
         dsts_configuration.service_dns_name = AAZStrArg(
             options=["service-dns-name"],
         )
@@ -1208,10 +1268,10 @@ class Create(AAZCommand):
             required=True,
         )
 
-        extensions = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element.extensions
+        extensions = cls._args_schema.resource_type_registrations.Element.endpoints.Element.extensions
         extensions.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element.extensions.Element
+        _element = cls._args_schema.resource_type_registrations.Element.endpoints.Element.extensions.Element
         _element.endpoint_uri = AAZStrArg(
             options=["endpoint-uri"],
         )
@@ -1222,31 +1282,31 @@ class Create(AAZCommand):
             options=["timeout"],
         )
 
-        extension_categories = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element.extensions.Element.extension_categories
+        extension_categories = cls._args_schema.resource_type_registrations.Element.endpoints.Element.extensions.Element.extension_categories
         extension_categories.Element = AAZStrArg(
             enum={"BestMatchOperationBegin": "BestMatchOperationBegin", "NotSpecified": "NotSpecified", "ResourceBillingNotification": "ResourceBillingNotification", "ResourceCreationBegin": "ResourceCreationBegin", "ResourceCreationCompleted": "ResourceCreationCompleted", "ResourceCreationValidate": "ResourceCreationValidate", "ResourceDeletionBegin": "ResourceDeletionBegin", "ResourceDeletionCompleted": "ResourceDeletionCompleted", "ResourceDeletionValidate": "ResourceDeletionValidate", "ResourceMoveBegin": "ResourceMoveBegin", "ResourceMoveCompleted": "ResourceMoveCompleted", "ResourcePatchBegin": "ResourcePatchBegin", "ResourcePatchCompleted": "ResourcePatchCompleted", "ResourcePatchValidate": "ResourcePatchValidate", "ResourcePostAction": "ResourcePostAction", "ResourceReadBegin": "ResourceReadBegin", "ResourceReadValidate": "ResourceReadValidate", "SubscriptionLifecycleNotification": "SubscriptionLifecycleNotification", "SubscriptionLifecycleNotificationDeletion": "SubscriptionLifecycleNotificationDeletion"},
         )
 
-        features_rule = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element.features_rule
+        features_rule = cls._args_schema.resource_type_registrations.Element.endpoints.Element.features_rule
         features_rule.required_features_policy = AAZStrArg(
             options=["required-features-policy"],
             required=True,
             enum={"All": "All", "Any": "Any"},
         )
 
-        locations = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element.locations
+        locations = cls._args_schema.resource_type_registrations.Element.endpoints.Element.locations
         locations.Element = AAZStrArg()
 
-        required_features = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element.required_features
+        required_features = cls._args_schema.resource_type_registrations.Element.endpoints.Element.required_features
         required_features.Element = AAZStrArg()
 
-        zones = cls._args_schema.specification.resource_type_registrations.Element.endpoints.Element.zones
+        zones = cls._args_schema.resource_type_registrations.Element.endpoints.Element.zones
         zones.Element = AAZStrArg()
 
-        extended_locations = cls._args_schema.specification.resource_type_registrations.Element.extended_locations
+        extended_locations = cls._args_schema.resource_type_registrations.Element.extended_locations
         extended_locations.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.extended_locations.Element
+        _element = cls._args_schema.resource_type_registrations.Element.extended_locations.Element
         _element.supported_policy = AAZStrArg(
             options=["supported-policy"],
             enum={"All": "All", "NotSpecified": "NotSpecified"},
@@ -1257,12 +1317,12 @@ class Create(AAZCommand):
             enum={"ArcZone": "ArcZone", "CustomLocation": "CustomLocation", "EdgeZone": "EdgeZone", "NotSpecified": "NotSpecified"},
         )
 
-        extension_options = cls._args_schema.specification.resource_type_registrations.Element.extension_options
+        extension_options = cls._args_schema.resource_type_registrations.Element.extension_options
         extension_options.resource_creation_begin = AAZObjectArg(
             options=["resource-creation-begin"],
         )
 
-        resource_creation_begin = cls._args_schema.specification.resource_type_registrations.Element.extension_options.resource_creation_begin
+        resource_creation_begin = cls._args_schema.resource_type_registrations.Element.extension_options.resource_creation_begin
         resource_creation_begin.request = AAZListArg(
             options=["request"],
         )
@@ -1270,24 +1330,24 @@ class Create(AAZCommand):
             options=["response"],
         )
 
-        request = cls._args_schema.specification.resource_type_registrations.Element.extension_options.resource_creation_begin.request
+        request = cls._args_schema.resource_type_registrations.Element.extension_options.resource_creation_begin.request
         request.Element = AAZStrArg(
             enum={"DoNotMergeExistingReadOnlyAndSecretProperties": "DoNotMergeExistingReadOnlyAndSecretProperties", "IncludeInternalMetadata": "IncludeInternalMetadata", "NotSpecified": "NotSpecified"},
         )
 
-        response = cls._args_schema.specification.resource_type_registrations.Element.extension_options.resource_creation_begin.response
+        response = cls._args_schema.resource_type_registrations.Element.extension_options.resource_creation_begin.response
         response.Element = AAZStrArg(
             enum={"DoNotMergeExistingReadOnlyAndSecretProperties": "DoNotMergeExistingReadOnlyAndSecretProperties", "IncludeInternalMetadata": "IncludeInternalMetadata", "NotSpecified": "NotSpecified"},
         )
 
-        features_rule = cls._args_schema.specification.resource_type_registrations.Element.features_rule
+        features_rule = cls._args_schema.resource_type_registrations.Element.features_rule
         features_rule.required_features_policy = AAZStrArg(
             options=["required-features-policy"],
             required=True,
             enum={"All": "All", "Any": "Any"},
         )
 
-        identity_management = cls._args_schema.specification.resource_type_registrations.Element.identity_management
+        identity_management = cls._args_schema.resource_type_registrations.Element.identity_management
         identity_management.application_id = AAZStrArg(
             options=["application-id"],
         )
@@ -1302,16 +1362,16 @@ class Create(AAZCommand):
             enum={"Actor": "Actor", "DelegatedResourceIdentity": "DelegatedResourceIdentity", "NotSpecified": "NotSpecified", "SystemAssigned": "SystemAssigned", "UserAssigned": "UserAssigned"},
         )
 
-        application_ids = cls._args_schema.specification.resource_type_registrations.Element.identity_management.application_ids
+        application_ids = cls._args_schema.resource_type_registrations.Element.identity_management.application_ids
         application_ids.Element = AAZStrArg()
 
-        delegation_app_ids = cls._args_schema.specification.resource_type_registrations.Element.identity_management.delegation_app_ids
+        delegation_app_ids = cls._args_schema.resource_type_registrations.Element.identity_management.delegation_app_ids
         delegation_app_ids.Element = AAZStrArg()
 
-        legacy_names = cls._args_schema.specification.resource_type_registrations.Element.legacy_names
+        legacy_names = cls._args_schema.resource_type_registrations.Element.legacy_names
         legacy_names.Element = AAZStrArg()
 
-        legacy_policy = cls._args_schema.specification.resource_type_registrations.Element.legacy_policy
+        legacy_policy = cls._args_schema.resource_type_registrations.Element.legacy_policy
         legacy_policy.disallowed_conditions = AAZListArg(
             options=["disallowed-conditions"],
         )
@@ -1319,10 +1379,10 @@ class Create(AAZCommand):
             options=["disallowed-legacy-operations"],
         )
 
-        disallowed_conditions = cls._args_schema.specification.resource_type_registrations.Element.legacy_policy.disallowed_conditions
+        disallowed_conditions = cls._args_schema.resource_type_registrations.Element.legacy_policy.disallowed_conditions
         disallowed_conditions.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.legacy_policy.disallowed_conditions.Element
+        _element = cls._args_schema.resource_type_registrations.Element.legacy_policy.disallowed_conditions.Element
         _element.disallowed_legacy_operations = AAZListArg(
             options=["disallowed-legacy-operations"],
         )
@@ -1331,27 +1391,27 @@ class Create(AAZCommand):
             help="Feature string.",
         )
 
-        disallowed_legacy_operations = cls._args_schema.specification.resource_type_registrations.Element.legacy_policy.disallowed_conditions.Element.disallowed_legacy_operations
+        disallowed_legacy_operations = cls._args_schema.resource_type_registrations.Element.legacy_policy.disallowed_conditions.Element.disallowed_legacy_operations
         disallowed_legacy_operations.Element = AAZStrArg(
             enum={"Action": "Action", "AzureAsyncOperationWaiting": "AzureAsyncOperationWaiting", "Create": "Create", "Delete": "Delete", "DeploymentCleanup": "DeploymentCleanup", "EvaluateDeploymentOutput": "EvaluateDeploymentOutput", "NotSpecified": "NotSpecified", "Read": "Read", "ResourceCacheWaiting": "ResourceCacheWaiting", "Waiting": "Waiting"},
         )
 
-        disallowed_legacy_operations = cls._args_schema.specification.resource_type_registrations.Element.legacy_policy.disallowed_legacy_operations
+        disallowed_legacy_operations = cls._args_schema.resource_type_registrations.Element.legacy_policy.disallowed_legacy_operations
         disallowed_legacy_operations.Element = AAZStrArg(
             enum={"Action": "Action", "AzureAsyncOperationWaiting": "AzureAsyncOperationWaiting", "Create": "Create", "Delete": "Delete", "DeploymentCleanup": "DeploymentCleanup", "EvaluateDeploymentOutput": "EvaluateDeploymentOutput", "NotSpecified": "NotSpecified", "Read": "Read", "ResourceCacheWaiting": "ResourceCacheWaiting", "Waiting": "Waiting"},
         )
 
-        lifecycle_info = cls._args_schema.specification.resource_type_registrations.Element.lifecycle_info
+        lifecycle_info = cls._args_schema.resource_type_registrations.Element.lifecycle_info
         lifecycle_info.lifecycle_stage = AAZStrArg(
             options=["lifecycle-stage"],
             help="The lifecycle stage.",
             enum={"GA": "GA", "InDevelopment": "InDevelopment", "PrivatePreview": "PrivatePreview", "PublicPreview": "PublicPreview", "Retired": "Retired"},
         )
 
-        linked_access_checks = cls._args_schema.specification.resource_type_registrations.Element.linked_access_checks
+        linked_access_checks = cls._args_schema.resource_type_registrations.Element.linked_access_checks
         linked_access_checks.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.linked_access_checks.Element
+        _element = cls._args_schema.resource_type_registrations.Element.linked_access_checks.Element
         _element.action_name = AAZStrArg(
             options=["action-name"],
         )
@@ -1368,10 +1428,10 @@ class Create(AAZCommand):
             options=["linked-type"],
         )
 
-        linked_notification_rules = cls._args_schema.specification.resource_type_registrations.Element.linked_notification_rules
+        linked_notification_rules = cls._args_schema.resource_type_registrations.Element.linked_notification_rules
         linked_notification_rules.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.linked_notification_rules.Element
+        _element = cls._args_schema.resource_type_registrations.Element.linked_notification_rules.Element
         _element.actions = AAZListArg(
             options=["actions"],
         )
@@ -1388,22 +1448,22 @@ class Create(AAZCommand):
             options=["linked-notification-timeout"],
         )
 
-        actions = cls._args_schema.specification.resource_type_registrations.Element.linked_notification_rules.Element.actions
+        actions = cls._args_schema.resource_type_registrations.Element.linked_notification_rules.Element.actions
         actions.Element = AAZStrArg()
 
-        actions_on_failed_operation = cls._args_schema.specification.resource_type_registrations.Element.linked_notification_rules.Element.actions_on_failed_operation
+        actions_on_failed_operation = cls._args_schema.resource_type_registrations.Element.linked_notification_rules.Element.actions_on_failed_operation
         actions_on_failed_operation.Element = AAZStrArg()
 
-        fast_path_actions = cls._args_schema.specification.resource_type_registrations.Element.linked_notification_rules.Element.fast_path_actions
+        fast_path_actions = cls._args_schema.resource_type_registrations.Element.linked_notification_rules.Element.fast_path_actions
         fast_path_actions.Element = AAZStrArg()
 
-        fast_path_actions_on_failed_operation = cls._args_schema.specification.resource_type_registrations.Element.linked_notification_rules.Element.fast_path_actions_on_failed_operation
+        fast_path_actions_on_failed_operation = cls._args_schema.resource_type_registrations.Element.linked_notification_rules.Element.fast_path_actions_on_failed_operation
         fast_path_actions_on_failed_operation.Element = AAZStrArg()
 
-        linked_operation_rules = cls._args_schema.specification.resource_type_registrations.Element.linked_operation_rules
+        linked_operation_rules = cls._args_schema.resource_type_registrations.Element.linked_operation_rules
         linked_operation_rules.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.linked_operation_rules.Element
+        _element = cls._args_schema.resource_type_registrations.Element.linked_operation_rules.Element
         _element.depends_on_types = AAZListArg(
             options=["depends-on-types"],
             help="Depends on types.",
@@ -1419,13 +1479,13 @@ class Create(AAZCommand):
             enum={"CrossResourceGroupResourceMove": "CrossResourceGroupResourceMove", "CrossSubscriptionResourceMove": "CrossSubscriptionResourceMove", "None": "None"},
         )
 
-        depends_on_types = cls._args_schema.specification.resource_type_registrations.Element.linked_operation_rules.Element.depends_on_types
+        depends_on_types = cls._args_schema.resource_type_registrations.Element.linked_operation_rules.Element.depends_on_types
         depends_on_types.Element = AAZStrArg()
 
-        logging_rules = cls._args_schema.specification.resource_type_registrations.Element.logging_rules
+        logging_rules = cls._args_schema.resource_type_registrations.Element.logging_rules
         logging_rules.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.logging_rules.Element
+        _element = cls._args_schema.resource_type_registrations.Element.logging_rules.Element
         _element.action = AAZStrArg(
             options=["action"],
             required=True,
@@ -1444,7 +1504,7 @@ class Create(AAZCommand):
             options=["hidden-property-paths"],
         )
 
-        hidden_property_paths = cls._args_schema.specification.resource_type_registrations.Element.logging_rules.Element.hidden_property_paths
+        hidden_property_paths = cls._args_schema.resource_type_registrations.Element.logging_rules.Element.hidden_property_paths
         hidden_property_paths.hidden_paths_on_request = AAZListArg(
             options=["hidden-paths-on-request"],
         )
@@ -1452,13 +1512,13 @@ class Create(AAZCommand):
             options=["hidden-paths-on-response"],
         )
 
-        hidden_paths_on_request = cls._args_schema.specification.resource_type_registrations.Element.logging_rules.Element.hidden_property_paths.hidden_paths_on_request
+        hidden_paths_on_request = cls._args_schema.resource_type_registrations.Element.logging_rules.Element.hidden_property_paths.hidden_paths_on_request
         hidden_paths_on_request.Element = AAZStrArg()
 
-        hidden_paths_on_response = cls._args_schema.specification.resource_type_registrations.Element.logging_rules.Element.hidden_property_paths.hidden_paths_on_response
+        hidden_paths_on_response = cls._args_schema.resource_type_registrations.Element.logging_rules.Element.hidden_property_paths.hidden_paths_on_response
         hidden_paths_on_response.Element = AAZStrArg()
 
-        managed_resource_group_configuration = cls._args_schema.specification.resource_type_registrations.Element.managed_resource_group_configuration
+        managed_resource_group_configuration = cls._args_schema.resource_type_registrations.Element.managed_resource_group_configuration
         managed_resource_group_configuration.application_ids = AAZListArg(
             options=["application-ids"],
         )
@@ -1472,10 +1532,10 @@ class Create(AAZCommand):
             options=["resource-group-location-override"],
         )
 
-        application_ids = cls._args_schema.specification.resource_type_registrations.Element.managed_resource_group_configuration.application_ids
+        application_ids = cls._args_schema.resource_type_registrations.Element.managed_resource_group_configuration.application_ids
         application_ids.Element = AAZStrArg()
 
-        deny_assignment_configuration = cls._args_schema.specification.resource_type_registrations.Element.managed_resource_group_configuration.deny_assignment_configuration
+        deny_assignment_configuration = cls._args_schema.resource_type_registrations.Element.managed_resource_group_configuration.deny_assignment_configuration
         deny_assignment_configuration.enabled = AAZBoolArg(
             options=["enabled"],
         )
@@ -1483,10 +1543,10 @@ class Create(AAZCommand):
             options=["not-actions"],
         )
 
-        not_actions = cls._args_schema.specification.resource_type_registrations.Element.managed_resource_group_configuration.deny_assignment_configuration.not_actions
+        not_actions = cls._args_schema.resource_type_registrations.Element.managed_resource_group_configuration.deny_assignment_configuration.not_actions
         not_actions.Element = AAZStrArg()
 
-        management = cls._args_schema.specification.resource_type_registrations.Element.management
+        management = cls._args_schema.resource_type_registrations.Element.management
         management.authorization_owners = AAZListArg(
             options=["authorization-owners"],
         )
@@ -1547,20 +1607,20 @@ class Create(AAZCommand):
             options=["service-tree-infos"],
         )
 
-        authorization_owners = cls._args_schema.specification.resource_type_registrations.Element.management.authorization_owners
+        authorization_owners = cls._args_schema.resource_type_registrations.Element.management.authorization_owners
         authorization_owners.Element = AAZStrArg()
 
-        canary_manifest_owners = cls._args_schema.specification.resource_type_registrations.Element.management.canary_manifest_owners
+        canary_manifest_owners = cls._args_schema.resource_type_registrations.Element.management.canary_manifest_owners
         canary_manifest_owners.Element = AAZStrArg()
 
-        error_response_message_options = cls._args_schema.specification.resource_type_registrations.Element.management.error_response_message_options
+        error_response_message_options = cls._args_schema.resource_type_registrations.Element.management.error_response_message_options
         error_response_message_options.server_failure_response_message_type = AAZStrArg(
             options=["server-failure-response-message-type"],
             help="Type of server failure response message.",
             enum={"NotSpecified": "NotSpecified", "OutageReporting": "OutageReporting"},
         )
 
-        expedited_rollout_metadata = cls._args_schema.specification.resource_type_registrations.Element.management.expedited_rollout_metadata
+        expedited_rollout_metadata = cls._args_schema.resource_type_registrations.Element.management.expedited_rollout_metadata
         expedited_rollout_metadata.enabled = AAZBoolArg(
             options=["enabled"],
             help="Expedited rollout enabled?",
@@ -1571,42 +1631,42 @@ class Create(AAZCommand):
             enum={"Hotfix": "Hotfix", "NotSpecified": "NotSpecified"},
         )
 
-        expedited_rollout_submitters = cls._args_schema.specification.resource_type_registrations.Element.management.expedited_rollout_submitters
+        expedited_rollout_submitters = cls._args_schema.resource_type_registrations.Element.management.expedited_rollout_submitters
         expedited_rollout_submitters.Element = AAZStrArg()
 
-        feature_approval_claims = cls._args_schema.specification.resource_type_registrations.Element.management.feature_approval_claims
+        feature_approval_claims = cls._args_schema.resource_type_registrations.Element.management.feature_approval_claims
         feature_approval_claims.Element = AAZStrArg()
 
-        feature_management_owners = cls._args_schema.specification.resource_type_registrations.Element.management.feature_management_owners
+        feature_management_owners = cls._args_schema.resource_type_registrations.Element.management.feature_management_owners
         feature_management_owners.Element = AAZStrArg()
 
-        manifest_owners = cls._args_schema.specification.resource_type_registrations.Element.management.manifest_owners
+        manifest_owners = cls._args_schema.resource_type_registrations.Element.management.manifest_owners
         manifest_owners.Element = AAZStrArg()
 
-        resource_access_roles = cls._args_schema.specification.resource_type_registrations.Element.management.resource_access_roles
+        resource_access_roles = cls._args_schema.resource_type_registrations.Element.management.resource_access_roles
         resource_access_roles.Element = AAZObjectArg()
         cls._build_args_resource_access_role_create(resource_access_roles.Element)
 
-        schema_owners = cls._args_schema.specification.resource_type_registrations.Element.management.schema_owners
+        schema_owners = cls._args_schema.resource_type_registrations.Element.management.schema_owners
         schema_owners.Element = AAZStrArg()
 
-        service_tree_infos = cls._args_schema.specification.resource_type_registrations.Element.management.service_tree_infos
+        service_tree_infos = cls._args_schema.resource_type_registrations.Element.management.service_tree_infos
         service_tree_infos.Element = AAZObjectArg()
         cls._build_args_service_tree_info_create(service_tree_infos.Element)
 
-        marketplace_options = cls._args_schema.specification.resource_type_registrations.Element.marketplace_options
+        marketplace_options = cls._args_schema.resource_type_registrations.Element.marketplace_options
         marketplace_options.add_on_plan_conversion_allowed = AAZBoolArg(
             options=["add-on-plan-conversion-allowed"],
             help="Add-on plan conversion allowed.",
         )
 
-        metadata = cls._args_schema.specification.resource_type_registrations.Element.metadata
+        metadata = cls._args_schema.resource_type_registrations.Element.metadata
         metadata.Element = AAZDictArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.metadata.Element
+        _element = cls._args_schema.resource_type_registrations.Element.metadata.Element
         _element.Element = AAZAnyTypeArg()
 
-        on_behalf_of_tokens = cls._args_schema.specification.resource_type_registrations.Element.on_behalf_of_tokens
+        on_behalf_of_tokens = cls._args_schema.resource_type_registrations.Element.on_behalf_of_tokens
         on_behalf_of_tokens.action_name = AAZStrArg(
             options=["action-name"],
         )
@@ -1614,18 +1674,18 @@ class Create(AAZCommand):
             options=["life-time"],
         )
 
-        open_api_configuration = cls._args_schema.specification.resource_type_registrations.Element.open_api_configuration
+        open_api_configuration = cls._args_schema.resource_type_registrations.Element.open_api_configuration
         open_api_configuration.validation = AAZObjectArg(
             options=["validation"],
         )
 
-        validation = cls._args_schema.specification.resource_type_registrations.Element.open_api_configuration.validation
+        validation = cls._args_schema.resource_type_registrations.Element.open_api_configuration.validation
         validation.allow_noncompliant_collection_response = AAZBoolArg(
             options=["allow-noncompliant-collection-response"],
             help="Indicates whether a non compliance response is allowed for a LIST call",
         )
 
-        private_endpoint_configuration = cls._args_schema.specification.resource_type_registrations.Element.private_endpoint_configuration
+        private_endpoint_configuration = cls._args_schema.resource_type_registrations.Element.private_endpoint_configuration
         private_endpoint_configuration.group_connectivity_information = AAZListArg(
             options=["group-connectivity-information"],
             help="The list of group connectivity information.",
@@ -1637,10 +1697,10 @@ class Create(AAZCommand):
             required=True,
         )
 
-        group_connectivity_information = cls._args_schema.specification.resource_type_registrations.Element.private_endpoint_configuration.group_connectivity_information
+        group_connectivity_information = cls._args_schema.resource_type_registrations.Element.private_endpoint_configuration.group_connectivity_information
         group_connectivity_information.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.private_endpoint_configuration.group_connectivity_information.Element
+        _element = cls._args_schema.resource_type_registrations.Element.private_endpoint_configuration.group_connectivity_information.Element
         _element.group_id = AAZStrArg(
             options=["group-id"],
             help="The group id.",
@@ -1661,13 +1721,13 @@ class Create(AAZCommand):
             required=True,
         )
 
-        required_members = cls._args_schema.specification.resource_type_registrations.Element.private_endpoint_configuration.group_connectivity_information.Element.required_members
+        required_members = cls._args_schema.resource_type_registrations.Element.private_endpoint_configuration.group_connectivity_information.Element.required_members
         required_members.Element = AAZStrArg()
 
-        required_zone_names = cls._args_schema.specification.resource_type_registrations.Element.private_endpoint_configuration.group_connectivity_information.Element.required_zone_names
+        required_zone_names = cls._args_schema.resource_type_registrations.Element.private_endpoint_configuration.group_connectivity_information.Element.required_zone_names
         required_zone_names.Element = AAZStrArg()
 
-        quota_rule = cls._args_schema.specification.resource_type_registrations.Element.quota_rule
+        quota_rule = cls._args_schema.resource_type_registrations.Element.quota_rule
         quota_rule.location_rules = AAZListArg(
             options=["location-rules"],
         )
@@ -1680,10 +1740,10 @@ class Create(AAZCommand):
             options=["required-features"],
         )
 
-        location_rules = cls._args_schema.specification.resource_type_registrations.Element.quota_rule.location_rules
+        location_rules = cls._args_schema.resource_type_registrations.Element.quota_rule.location_rules
         location_rules.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.quota_rule.location_rules.Element
+        _element = cls._args_schema.resource_type_registrations.Element.quota_rule.location_rules.Element
         _element.location = AAZStrArg(
             options=["location"],
         )
@@ -1696,10 +1756,10 @@ class Create(AAZCommand):
             options=["quota-id"],
         )
 
-        required_features = cls._args_schema.specification.resource_type_registrations.Element.quota_rule.required_features
+        required_features = cls._args_schema.resource_type_registrations.Element.quota_rule.required_features
         required_features.Element = AAZStrArg()
 
-        request_header_options = cls._args_schema.specification.resource_type_registrations.Element.request_header_options
+        request_header_options = cls._args_schema.resource_type_registrations.Element.request_header_options
         request_header_options.opt_in_headers = AAZStrArg(
             options=["opt-in-headers"],
             enum={"ClientGroupMembership": "ClientGroupMembership", "ClientPrincipalNameEncoded": "ClientPrincipalNameEncoded", "MSIResourceIdEncoded": "MSIResourceIdEncoded", "ManagementGroupAncestorsEncoded": "ManagementGroupAncestorsEncoded", "NotSpecified": "NotSpecified", "PrivateLinkId": "PrivateLinkId", "PrivateLinkResourceId": "PrivateLinkResourceId", "PrivateLinkVnetTrafficTag": "PrivateLinkVnetTrafficTag", "ResourceGroupLocation": "ResourceGroupLocation", "SignedAuxiliaryTokens": "SignedAuxiliaryTokens", "SignedUserToken": "SignedUserToken", "UnboundedClientGroupMembership": "UnboundedClientGroupMembership"},
@@ -1709,10 +1769,10 @@ class Create(AAZCommand):
             enum={"NotSpecified": "NotSpecified", "SystemDataCreatedByLastModifiedBy": "SystemDataCreatedByLastModifiedBy"},
         )
 
-        required_features = cls._args_schema.specification.resource_type_registrations.Element.required_features
+        required_features = cls._args_schema.resource_type_registrations.Element.required_features
         required_features.Element = AAZStrArg()
 
-        resource_cache = cls._args_schema.specification.resource_type_registrations.Element.resource_cache
+        resource_cache = cls._args_schema.resource_type_registrations.Element.resource_cache
         resource_cache.enable_resource_cache = AAZBoolArg(
             options=["enable-resource-cache"],
             help="Enable resource cache.",
@@ -1722,19 +1782,19 @@ class Create(AAZCommand):
             help="Resource cache expiration timespan.",
         )
 
-        resource_concurrency_control_options = cls._args_schema.specification.resource_type_registrations.Element.resource_concurrency_control_options
+        resource_concurrency_control_options = cls._args_schema.resource_type_registrations.Element.resource_concurrency_control_options
         resource_concurrency_control_options.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.resource_concurrency_control_options.Element
+        _element = cls._args_schema.resource_type_registrations.Element.resource_concurrency_control_options.Element
         _element.policy = AAZStrArg(
             options=["policy"],
             enum={"NotSpecified": "NotSpecified", "SynchronizeBeginExtension": "SynchronizeBeginExtension"},
         )
 
-        resource_deletion_policies = cls._args_schema.specification.resource_type_registrations.Element.resource_deletion_policies
+        resource_deletion_policies = cls._args_schema.resource_type_registrations.Element.resource_deletion_policies
         resource_deletion_policies.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.resource_deletion_policies.Element
+        _element = cls._args_schema.resource_type_registrations.Element.resource_deletion_policies.Element
         _element.policy_name = AAZStrArg(
             options=["policy-name"],
             enum={"Cascade": "Cascade", "CascadeDeleteAll": "CascadeDeleteAll", "CascadeDeleteProxyOnlyChildren": "CascadeDeleteProxyOnlyChildren", "Force": "Force", "NotSpecified": "NotSpecified", "SoftDelete": "SoftDelete"},
@@ -1746,7 +1806,7 @@ class Create(AAZCommand):
             options=["minimum-retention-time"],
         )
 
-        resource_graph_configuration = cls._args_schema.specification.resource_type_registrations.Element.resource_graph_configuration
+        resource_graph_configuration = cls._args_schema.resource_type_registrations.Element.resource_graph_configuration
         resource_graph_configuration.api_version = AAZStrArg(
             options=["api-version"],
         )
@@ -1754,7 +1814,7 @@ class Create(AAZCommand):
             options=["enabled"],
         )
 
-        resource_management_options = cls._args_schema.specification.resource_type_registrations.Element.resource_management_options
+        resource_management_options = cls._args_schema.resource_type_registrations.Element.resource_management_options
         resource_management_options.batch_provisioning_support = AAZObjectArg(
             options=["batch-provisioning-support"],
             help="Batch provisioning support.",
@@ -1768,7 +1828,7 @@ class Create(AAZCommand):
             help="Nested provisioning support.",
         )
 
-        batch_provisioning_support = cls._args_schema.specification.resource_type_registrations.Element.resource_management_options.batch_provisioning_support
+        batch_provisioning_support = cls._args_schema.resource_type_registrations.Element.resource_management_options.batch_provisioning_support
         batch_provisioning_support.action_configurations = AAZListArg(
             options=["action-configurations"],
             help="Action Configurations.",
@@ -1792,10 +1852,10 @@ class Create(AAZCommand):
             enum={"Delete": "Delete", "Get": "Get", "NotSpecified": "NotSpecified"},
         )
 
-        action_configurations = cls._args_schema.specification.resource_type_registrations.Element.resource_management_options.batch_provisioning_support.action_configurations
+        action_configurations = cls._args_schema.resource_type_registrations.Element.resource_management_options.batch_provisioning_support.action_configurations
         action_configurations.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.resource_management_options.batch_provisioning_support.action_configurations.Element
+        _element = cls._args_schema.resource_type_registrations.Element.resource_management_options.batch_provisioning_support.action_configurations.Element
         _element.authorization_action = AAZStrArg(
             options=["authorization-action"],
             help="Authorization action.",
@@ -1804,13 +1864,13 @@ class Create(AAZCommand):
             options=["max-batch-size"],
         )
 
-        required_features = cls._args_schema.specification.resource_type_registrations.Element.resource_management_options.batch_provisioning_support.required_features
+        required_features = cls._args_schema.resource_type_registrations.Element.resource_management_options.batch_provisioning_support.required_features
         required_features.Element = AAZStrArg()
 
-        delete_dependencies = cls._args_schema.specification.resource_type_registrations.Element.resource_management_options.delete_dependencies
+        delete_dependencies = cls._args_schema.resource_type_registrations.Element.resource_management_options.delete_dependencies
         delete_dependencies.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.resource_management_options.delete_dependencies.Element
+        _element = cls._args_schema.resource_type_registrations.Element.resource_management_options.delete_dependencies.Element
         _element.linked_property = AAZStrArg(
             options=["linked-property"],
             help="Linked property.",
@@ -1824,16 +1884,16 @@ class Create(AAZCommand):
             help="Required features.",
         )
 
-        required_features = cls._args_schema.specification.resource_type_registrations.Element.resource_management_options.delete_dependencies.Element.required_features
+        required_features = cls._args_schema.resource_type_registrations.Element.resource_management_options.delete_dependencies.Element.required_features
         required_features.Element = AAZStrArg()
 
-        nested_provisioning_support = cls._args_schema.specification.resource_type_registrations.Element.resource_management_options.nested_provisioning_support
+        nested_provisioning_support = cls._args_schema.resource_type_registrations.Element.resource_management_options.nested_provisioning_support
         nested_provisioning_support.minimum_api_version = AAZStrArg(
             options=["minimum-api-version"],
             help="Minimum API version.",
         )
 
-        resource_move_policy = cls._args_schema.specification.resource_type_registrations.Element.resource_move_policy
+        resource_move_policy = cls._args_schema.resource_type_registrations.Element.resource_move_policy
         resource_move_policy.cross_resource_group_move_enabled = AAZBoolArg(
             options=["cross-resource-group-move-enabled"],
         )
@@ -1844,31 +1904,31 @@ class Create(AAZCommand):
             options=["validation-required"],
         )
 
-        resource_query_management = cls._args_schema.specification.resource_type_registrations.Element.resource_query_management
+        resource_query_management = cls._args_schema.resource_type_registrations.Element.resource_query_management
         resource_query_management.filter_option = AAZStrArg(
             options=["filter-option"],
             help="Filter option.",
             enum={"EnableSubscriptionFilterOnTenant": "EnableSubscriptionFilterOnTenant", "NotSpecified": "NotSpecified"},
         )
 
-        resource_type_common_attribute_management = cls._args_schema.specification.resource_type_registrations.Element.resource_type_common_attribute_management
+        resource_type_common_attribute_management = cls._args_schema.resource_type_registrations.Element.resource_type_common_attribute_management
         resource_type_common_attribute_management.common_api_versions_merge_mode = AAZStrArg(
             options=["common-api-versions-merge-mode"],
             help="Common api versions merge mode.",
             enum={"Merge": "Merge", "Overwrite": "Overwrite"},
         )
 
-        routing_rule = cls._args_schema.specification.resource_type_registrations.Element.routing_rule
+        routing_rule = cls._args_schema.resource_type_registrations.Element.routing_rule
         routing_rule.host_resource_type = AAZStrArg(
             options=["host-resource-type"],
             help="Hosted resource type.",
         )
 
-        service_tree_infos = cls._args_schema.specification.resource_type_registrations.Element.service_tree_infos
+        service_tree_infos = cls._args_schema.resource_type_registrations.Element.service_tree_infos
         service_tree_infos.Element = AAZObjectArg()
         cls._build_args_service_tree_info_create(service_tree_infos.Element)
 
-        subscription_lifecycle_notification_specifications = cls._args_schema.specification.resource_type_registrations.Element.subscription_lifecycle_notification_specifications
+        subscription_lifecycle_notification_specifications = cls._args_schema.resource_type_registrations.Element.subscription_lifecycle_notification_specifications
         subscription_lifecycle_notification_specifications.soft_delete_ttl = AAZDurationArg(
             options=["soft-delete-ttl"],
         )
@@ -1876,14 +1936,14 @@ class Create(AAZCommand):
             options=["subscription-state-override-actions"],
         )
 
-        subscription_state_override_actions = cls._args_schema.specification.resource_type_registrations.Element.subscription_lifecycle_notification_specifications.subscription_state_override_actions
+        subscription_state_override_actions = cls._args_schema.resource_type_registrations.Element.subscription_lifecycle_notification_specifications.subscription_state_override_actions
         subscription_state_override_actions.Element = AAZObjectArg()
         cls._build_args_subscription_state_override_action_create(subscription_state_override_actions.Element)
 
-        subscription_state_rules = cls._args_schema.specification.resource_type_registrations.Element.subscription_state_rules
+        subscription_state_rules = cls._args_schema.resource_type_registrations.Element.subscription_state_rules
         subscription_state_rules.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.subscription_state_rules.Element
+        _element = cls._args_schema.resource_type_registrations.Element.subscription_state_rules.Element
         _element.allowed_actions = AAZListArg(
             options=["allowed-actions"],
         )
@@ -1892,13 +1952,13 @@ class Create(AAZCommand):
             enum={"Deleted": "Deleted", "Disabled": "Disabled", "Enabled": "Enabled", "NotDefined": "NotDefined", "PastDue": "PastDue", "Warned": "Warned"},
         )
 
-        allowed_actions = cls._args_schema.specification.resource_type_registrations.Element.subscription_state_rules.Element.allowed_actions
+        allowed_actions = cls._args_schema.resource_type_registrations.Element.subscription_state_rules.Element.allowed_actions
         allowed_actions.Element = AAZStrArg()
 
-        swagger_specifications = cls._args_schema.specification.resource_type_registrations.Element.swagger_specifications
+        swagger_specifications = cls._args_schema.resource_type_registrations.Element.swagger_specifications
         swagger_specifications.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.swagger_specifications.Element
+        _element = cls._args_schema.resource_type_registrations.Element.swagger_specifications.Element
         _element.api_versions = AAZListArg(
             options=["api-versions"],
         )
@@ -1910,17 +1970,17 @@ class Create(AAZCommand):
             options=["swagger-spec-folder-uri"],
         )
 
-        api_versions = cls._args_schema.specification.resource_type_registrations.Element.swagger_specifications.Element.api_versions
+        api_versions = cls._args_schema.resource_type_registrations.Element.swagger_specifications.Element.api_versions
         api_versions.Element = AAZStrArg()
 
-        lifecycle_info = cls._args_schema.specification.resource_type_registrations.Element.swagger_specifications.Element.lifecycle_info
+        lifecycle_info = cls._args_schema.resource_type_registrations.Element.swagger_specifications.Element.lifecycle_info
         lifecycle_info.lifecycle_stage = AAZStrArg(
             options=["lifecycle-stage"],
             help="The lifecycle stage.",
             enum={"GA": "GA", "InDevelopment": "InDevelopment", "PrivatePreview": "PrivatePreview", "PublicPreview": "PublicPreview", "Retired": "Retired"},
         )
 
-        template_deployment_options = cls._args_schema.specification.resource_type_registrations.Element.template_deployment_options
+        template_deployment_options = cls._args_schema.resource_type_registrations.Element.template_deployment_options
         template_deployment_options.preflight_options = AAZListArg(
             options=["preflight-options"],
         )
@@ -1928,12 +1988,12 @@ class Create(AAZCommand):
             options=["preflight-supported"],
         )
 
-        preflight_options = cls._args_schema.specification.resource_type_registrations.Element.template_deployment_options.preflight_options
+        preflight_options = cls._args_schema.resource_type_registrations.Element.template_deployment_options.preflight_options
         preflight_options.Element = AAZStrArg(
             enum={"ContinueDeploymentOnFailure": "ContinueDeploymentOnFailure", "DefaultValidationOnly": "DefaultValidationOnly", "None": "None"},
         )
 
-        template_deployment_policy = cls._args_schema.specification.resource_type_registrations.Element.template_deployment_policy
+        template_deployment_policy = cls._args_schema.resource_type_registrations.Element.template_deployment_policy
         template_deployment_policy.capabilities = AAZStrArg(
             options=["capabilities"],
             required=True,
@@ -1949,10 +2009,10 @@ class Create(AAZCommand):
             enum={"DeploymentRequests": "DeploymentRequests", "None": "None", "RegisteredOnly": "RegisteredOnly", "TestOnly": "TestOnly", "ValidationRequests": "ValidationRequests"},
         )
 
-        throttling_rules = cls._args_schema.specification.resource_type_registrations.Element.throttling_rules
+        throttling_rules = cls._args_schema.resource_type_registrations.Element.throttling_rules
         throttling_rules.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.throttling_rules.Element
+        _element = cls._args_schema.resource_type_registrations.Element.throttling_rules.Element
         _element.action = AAZStrArg(
             options=["action"],
             required=True,
@@ -1968,13 +2028,13 @@ class Create(AAZCommand):
             options=["required-features"],
         )
 
-        application_id = cls._args_schema.specification.resource_type_registrations.Element.throttling_rules.Element.application_id
+        application_id = cls._args_schema.resource_type_registrations.Element.throttling_rules.Element.application_id
         application_id.Element = AAZStrArg()
 
-        metrics = cls._args_schema.specification.resource_type_registrations.Element.throttling_rules.Element.metrics
+        metrics = cls._args_schema.resource_type_registrations.Element.throttling_rules.Element.metrics
         metrics.Element = AAZObjectArg()
 
-        _element = cls._args_schema.specification.resource_type_registrations.Element.throttling_rules.Element.metrics.Element
+        _element = cls._args_schema.resource_type_registrations.Element.throttling_rules.Element.metrics.Element
         _element.bucket_size = AAZStrArg(
             options=["bucket-size"],
         )
@@ -1991,10 +2051,10 @@ class Create(AAZCommand):
             enum={"NotSpecified": "NotSpecified", "NumberOfRequests": "NumberOfRequests", "NumberOfResources": "NumberOfResources"},
         )
 
-        required_features = cls._args_schema.specification.resource_type_registrations.Element.throttling_rules.Element.required_features
+        required_features = cls._args_schema.resource_type_registrations.Element.throttling_rules.Element.required_features
         required_features.Element = AAZStrArg()
 
-        write_lock = cls._args_schema.specification.resource_type_registrations.Element.write_lock
+        write_lock = cls._args_schema.resource_type_registrations.Element.write_lock
         write_lock.state = AAZStrArg(
             options=["state"],
             help="The state of write lock feature. The feature will ensure a deterministic sequence of write-operation within and across the verbs. Also the feature will ensure that the semantics of synchronous and long-running operations are honored.",
@@ -2002,7 +2062,7 @@ class Create(AAZCommand):
             enum={"Disabled": "Disabled", "Enabled": "Enabled"},
         )
 
-        rest_of_the_world_group_one = cls._args_schema.specification.rest_of_the_world_group_one
+        rest_of_the_world_group_one = cls._args_schema.rest_of_the_world_group_one
         rest_of_the_world_group_one.regions = AAZListArg(
             options=["regions"],
         )
@@ -2010,10 +2070,10 @@ class Create(AAZCommand):
             options=["wait-duration"],
         )
 
-        regions = cls._args_schema.specification.rest_of_the_world_group_one.regions
+        regions = cls._args_schema.rest_of_the_world_group_one.regions
         regions.Element = AAZStrArg()
 
-        rest_of_the_world_group_two = cls._args_schema.specification.rest_of_the_world_group_two
+        rest_of_the_world_group_two = cls._args_schema.rest_of_the_world_group_two
         rest_of_the_world_group_two.regions = AAZListArg(
             options=["regions"],
         )
@@ -2021,56 +2081,8 @@ class Create(AAZCommand):
             options=["wait-duration"],
         )
 
-        regions = cls._args_schema.specification.rest_of_the_world_group_two.regions
+        regions = cls._args_schema.rest_of_the_world_group_two.regions
         regions.Element = AAZStrArg()
-
-        status = cls._args_schema.status
-        status.completed_regions = AAZListArg(
-            options=["completed-regions"],
-        )
-        status.failed_or_skipped_regions = AAZDictArg(
-            options=["failed-or-skipped-regions"],
-        )
-        status.manifest_checkin_status = AAZObjectArg(
-            options=["manifest-checkin-status"],
-        )
-        status.next_traffic_region = AAZStrArg(
-            options=["next-traffic-region"],
-            enum={"Canary": "Canary", "HighTraffic": "HighTraffic", "LowTraffic": "LowTraffic", "MediumTraffic": "MediumTraffic", "None": "None", "NotSpecified": "NotSpecified", "RestOfTheWorldGroupOne": "RestOfTheWorldGroupOne", "RestOfTheWorldGroupTwo": "RestOfTheWorldGroupTwo"},
-        )
-        status.next_traffic_region_scheduled_time = AAZDateTimeArg(
-            options=["next-traffic-region-scheduled-time"],
-            fmt=AAZDateTimeFormat(
-                protocol="iso",
-            ),
-        )
-        status.subscription_reregistration_result = AAZStrArg(
-            options=["subscription-reregistration-result"],
-            enum={"ConditionalUpdate": "ConditionalUpdate", "Failed": "Failed", "ForcedUpdate": "ForcedUpdate", "NotApplicable": "NotApplicable"},
-        )
-
-        completed_regions = cls._args_schema.status.completed_regions
-        completed_regions.Element = AAZStrArg()
-
-        failed_or_skipped_regions = cls._args_schema.status.failed_or_skipped_regions
-        failed_or_skipped_regions.Element = AAZObjectArg()
-        cls._build_args_extended_error_info_create(failed_or_skipped_regions.Element)
-
-        manifest_checkin_status = cls._args_schema.status.manifest_checkin_status
-        manifest_checkin_status.commit_id = AAZStrArg(
-            options=["commit-id"],
-        )
-        manifest_checkin_status.is_checked_in = AAZBoolArg(
-            options=["is-checked-in"],
-            required=True,
-        )
-        manifest_checkin_status.pull_request = AAZStrArg(
-            options=["pull-request"],
-        )
-        manifest_checkin_status.status_message = AAZStrArg(
-            options=["status-message"],
-            required=True,
-        )
         return cls._args_schema
 
     _args_extended_error_info_create = None
@@ -2554,7 +2566,7 @@ class Create(AAZCommand):
 
             properties = _builder.get(".properties")
             if properties is not None:
-                properties.set_prop("specification", AAZObjectType, ".specification")
+                properties.set_prop("specification", AAZObjectType)
                 properties.set_prop("status", AAZObjectType, ".status")
 
             specification = _builder.get(".properties.specification")

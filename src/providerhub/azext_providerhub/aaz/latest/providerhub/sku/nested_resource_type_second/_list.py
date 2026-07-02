@@ -17,7 +17,7 @@ from azure.cli.core.aaz import *
 class List(AAZCommand):
     """List the list of skus for the given resource type.
 
-    :example: Skus_ListByResourceTypeRegistrationsNestedResourceTypeSecond
+    :example: sku nested-resource-type-second list
         az providerhub sku nested-resource-type-second list --nested-resource-type-first "nestedResourceTypeFirst" --nested-resource-type-second "nestedResourceTypeSecond" --provider-namespace "{providerNamespace}" --resource-type "{resourceType}"
     """
 

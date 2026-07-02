@@ -17,7 +17,7 @@ from azure.cli.core.aaz import *
 class List(AAZCommand):
     """List the operations supported by the given provider.
 
-    :example: Operations_ListByProviderRegistration
+    :example: operation list
         az providerhub operation list --provider-namespace "{providerNamespace}"
     """
 

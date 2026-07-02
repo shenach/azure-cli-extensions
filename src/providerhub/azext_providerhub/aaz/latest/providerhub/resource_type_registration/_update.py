@@ -57,6 +57,37 @@ class Update(AAZCommand):
             id_part="child_name_1",
         )
 
+        # define Arg Group "ExtensionOptions"
+
+        _args_schema = cls._args_schema
+        _args_schema.resource_creation_begin = AAZObjectArg(
+            options=["--resource-creation-begin"],
+            arg_group="ExtensionOptions",
+            nullable=True,
+        )
+
+        resource_creation_begin = cls._args_schema.resource_creation_begin
+        resource_creation_begin.request = AAZListArg(
+            options=["request"],
+            nullable=True,
+        )
+        resource_creation_begin.response = AAZListArg(
+            options=["response"],
+            nullable=True,
+        )
+
+        request = cls._args_schema.resource_creation_begin.request
+        request.Element = AAZStrArg(
+            nullable=True,
+            enum={"DoNotMergeExistingReadOnlyAndSecretProperties": "DoNotMergeExistingReadOnlyAndSecretProperties", "IncludeInternalMetadata": "IncludeInternalMetadata", "NotSpecified": "NotSpecified"},
+        )
+
+        response = cls._args_schema.resource_creation_begin.response
+        response.Element = AAZStrArg(
+            nullable=True,
+            enum={"DoNotMergeExistingReadOnlyAndSecretProperties": "DoNotMergeExistingReadOnlyAndSecretProperties", "IncludeInternalMetadata": "IncludeInternalMetadata", "NotSpecified": "NotSpecified"},
+        )
+
         # define Arg Group "Properties"
 
         _args_schema = cls._args_schema
@@ -68,7 +99,7 @@ class Update(AAZCommand):
             enum={"Direct": "Direct", "Hybrid": "Hybrid", "Managed": "Managed"},
         )
         _args_schema.add_resource_list_target_locations = AAZBoolArg(
-            options=["--add-resource-list-target-locations"],
+            options=["--add-target-locations", "--add-resource-list-target-locations"],
             arg_group="Properties",
             help="Add resource list target locations?",
             nullable=True,
@@ -80,8 +111,9 @@ class Update(AAZCommand):
             enum={"ProtectedAsyncOperationPolling": "ProtectedAsyncOperationPolling", "ProtectedAsyncOperationPollingAuditOnly": "ProtectedAsyncOperationPollingAuditOnly"},
         )
         _args_schema.allow_empty_role_assignments = AAZBoolArg(
-            options=["--allow-empty-role-assignments"],
+            options=["--allow-empty-role", "--allow-empty-role-assignments"],
             arg_group="Properties",
+            help="Determines if empty role assignments are allowed.",
             nullable=True,
         )
         _args_schema.allowed_resource_names = AAZListArg(
@@ -90,14 +122,15 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.allowed_template_deployment_reference_actions = AAZListArg(
-            options=["--allowed-template-deployment-reference-actions"],
+            options=["--allowed-templ-actions", "--allowed-template-deployment-reference-actions"],
             arg_group="Properties",
             help="Allowed template deployment reference actions.",
             nullable=True,
         )
         _args_schema.allowed_unauthorized_actions = AAZListArg(
-            options=["--allowed-unauthorized-actions"],
+            options=["--aua", "--allowed-unauthorized-actions"],
             arg_group="Properties",
+            help="The allowed unauthorized actions.",
             nullable=True,
         )
         _args_schema.allowed_unauthorized_actions_extensions = AAZListArg(
@@ -111,8 +144,9 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.async_operation_resource_type_name = AAZStrArg(
-            options=["--async-operation-resource-type-name"],
+            options=["--async-op-rt-name", "--async-operation-resource-type-name"],
             arg_group="Properties",
+            help="The async operation resource type name.",
             nullable=True,
         )
         _args_schema.async_timeout_rules = AAZListArg(
@@ -122,8 +156,10 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.authorization_action_mappings = AAZListArg(
-            options=["--authorization-action-mappings"],
+            options=["--auth-mappings", "--authorization-action-mappings"],
+            singular_options=["--auth-mapping", "--auth-mappings"],
             arg_group="Properties",
+            help="Allows RP to override action verb for RBAC purposes at ARM.",
             nullable=True,
         )
         _args_schema.availability_zone_rule = AAZObjectArg(
@@ -144,8 +180,9 @@ class Update(AAZCommand):
             enum={"FreeForm": "FreeForm", "Internal": "Internal", "None": "None", "PureProxy": "PureProxy"},
         )
         _args_schema.check_name_availability_specifications = AAZObjectArg(
-            options=["--check-name-availability-specifications"],
+            options=["--checkname-specs", "--check-name-availability-specifications"],
             arg_group="Properties",
+            help="Name availability checks feature at the platform level.",
             nullable=True,
         )
         _args_schema.common_api_versions = AAZListArg(
@@ -155,29 +192,34 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.cross_tenant_token_validation = AAZStrArg(
-            options=["--cross-tenant-token-validation"],
+            options=["--token-validation", "--cross-tenant-token-validation"],
             arg_group="Properties",
+            help="The cross tenant token validation.",
             nullable=True,
             enum={"EnsureSecureValidation": "EnsureSecureValidation", "PassthroughInsecureToken": "PassthroughInsecureToken"},
         )
         _args_schema.default_api_version = AAZStrArg(
             options=["--default-api-version"],
             arg_group="Properties",
+            help="The default API version for the endpoint.",
             nullable=True,
         )
         _args_schema.disallowed_action_verbs = AAZListArg(
-            options=["--disallowed-action-verbs"],
+            options=["--dav", "--disallowed-action-verbs"],
             arg_group="Properties",
+            help="The disallowed action verbs.",
             nullable=True,
         )
         _args_schema.disallowed_end_user_operations = AAZListArg(
-            options=["--disallowed-end-user-operations"],
+            options=["--disallowed-ops", "--disallowed-end-user-operations"],
             arg_group="Properties",
+            help="The disallowed end user operations.",
             nullable=True,
         )
         _args_schema.dsts_configuration = AAZObjectArg(
             options=["--dsts-configuration"],
             arg_group="Properties",
+            help="The DSTS configuration.",
             nullable=True,
         )
         _args_schema.enable_async_operation = AAZBoolArg(
@@ -186,23 +228,22 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.enable_third_party_s2_s = AAZBoolArg(
-            options=["--enable-third-party-s2-s"],
+            options=["--enable-3p-s2s", "--enable-third-party-s2-s"],
             arg_group="Properties",
+            help="Indicates whether third party s2s is enabled for this resource type.",
             nullable=True,
         )
         _args_schema.endpoints = AAZListArg(
             options=["--endpoints"],
+            singular_options=["--endpoint"],
             arg_group="Properties",
+            help="The resource type endpoints.",
             nullable=True,
         )
         _args_schema.extended_locations = AAZListArg(
             options=["--extended-locations"],
             arg_group="Properties",
-            nullable=True,
-        )
-        _args_schema.extension_options = AAZObjectArg(
-            options=["--extension-options"],
-            arg_group="Properties",
+            help="The extended location options.",
             nullable=True,
         )
         _args_schema.features_rule = AAZObjectArg(
@@ -213,6 +254,7 @@ class Update(AAZCommand):
         _args_schema.frontdoor_request_mode = AAZStrArg(
             options=["--frontdoor-request-mode"],
             arg_group="Properties",
+            help="The frontdoor request mode.",
             nullable=True,
             enum={"NotSpecified": "NotSpecified", "UseManifest": "UseManifest"},
         )
@@ -225,16 +267,19 @@ class Update(AAZCommand):
         _args_schema.identity_management = AAZObjectArg(
             options=["--identity-management"],
             arg_group="Properties",
+            help="MSI related settings.",
             nullable=True,
         )
         _args_schema.is_pure_proxy = AAZBoolArg(
             options=["--is-pure-proxy"],
             arg_group="Properties",
+            help="Indicates whether this is a PureProxy resource type.",
             nullable=True,
         )
         _args_schema.legacy_name = AAZStrArg(
             options=["--legacy-name"],
             arg_group="Properties",
+            help="The legacy name.",
             nullable=True,
         )
         _args_schema.legacy_names = AAZListArg(
@@ -254,13 +299,15 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.linked_access_checks = AAZListArg(
-            options=["--linked-access-checks"],
+            options=["--linked-access-check", "--linked-access-checks"],
             arg_group="Properties",
+            help="Enables additional Role Based Access Control (RBAC) checks on related resources.",
             nullable=True,
         )
         _args_schema.linked_notification_rules = AAZListArg(
-            options=["--linked-notification-rules"],
+            options=["--linked-notif-rules", "--linked-notification-rules"],
             arg_group="Properties",
+            help="The linked notification rules.",
             nullable=True,
         )
         _args_schema.linked_operation_rules = AAZListArg(
@@ -274,8 +321,9 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.managed_resource_group_configuration = AAZObjectArg(
-            options=["--managed-resource-group-configuration"],
+            options=["--managed-rg-config", "--managed-resource-group-configuration"],
             arg_group="Properties",
+            help="The managed resource group configuration.",
             nullable=True,
         )
         _args_schema.management = AAZObjectArg(
@@ -298,6 +346,7 @@ class Update(AAZCommand):
         _args_schema.marketplace_type = AAZStrArg(
             options=["--marketplace-type"],
             arg_group="Properties",
+            help="The type of marketplace behavior for the resource type.",
             nullable=True,
             enum={"AddOn": "AddOn", "Bypass": "Bypass", "NotSpecified": "NotSpecified", "ProviderHub": "ProviderHub", "Store": "Store"},
         )
@@ -309,6 +358,7 @@ class Update(AAZCommand):
         _args_schema.notifications = AAZListArg(
             options=["--notifications"],
             arg_group="Properties",
+            help="The notifications object.",
             nullable=True,
         )
         _args_schema.on_behalf_of_tokens = AAZObjectArg(
@@ -324,12 +374,14 @@ class Update(AAZCommand):
         _args_schema.policy_execution_type = AAZStrArg(
             options=["--policy-execution-type"],
             arg_group="Properties",
+            help="The policy execution type.",
             nullable=True,
             enum={"BypassPolicies": "BypassPolicies", "ExecutePolicies": "ExecutePolicies", "ExpectPartialPutRequests": "ExpectPartialPutRequests", "NotSpecified": "NotSpecified"},
         )
         _args_schema.private_endpoint_configuration = AAZObjectArg(
-            options=["--private-endpoint-configuration"],
+            options=["--priv-endpoint-config", "--private-endpoint-configuration"],
             arg_group="Properties",
+            help="The private endpoint config.",
             nullable=True,
         )
         _args_schema.quota_rule = AAZObjectArg(
@@ -340,17 +392,14 @@ class Update(AAZCommand):
         _args_schema.regionality = AAZStrArg(
             options=["--regionality"],
             arg_group="Properties",
+            help="The regionality of the resource type. Allowed values: Global, NotSpecified, Regional.",
             nullable=True,
             enum={"Global": "Global", "NotSpecified": "NotSpecified", "Regional": "Regional"},
-        )
-        _args_schema.request_header_options = AAZObjectArg(
-            options=["--request-header-options"],
-            arg_group="Properties",
-            nullable=True,
         )
         _args_schema.required_features = AAZListArg(
             options=["--required-features"],
             arg_group="Properties",
+            help="The required features.",
             nullable=True,
         )
         _args_schema.resource_cache = AAZObjectArg(
@@ -360,8 +409,9 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.resource_concurrency_control_options = AAZDictArg(
-            options=["--resource-concurrency-control-options"],
+            options=["--concurrency-options", "--resource-concurrency-control-options"],
             arg_group="Properties",
+            help="The resource concurrency control options.",
             nullable=True,
         )
         _args_schema.resource_deletion_policies = AAZListArg(
@@ -371,18 +421,20 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.resource_deletion_policy = AAZStrArg(
-            options=["--resource-deletion-policy"],
+            options=["--deletion-policy", "--resource-deletion-policy"],
             arg_group="Properties",
+            help="The resource deletion policy.",
             nullable=True,
             enum={"CascadeDeleteAll": "CascadeDeleteAll", "CascadeDeleteProxyOnlyChildren": "CascadeDeleteProxyOnlyChildren", "NotSpecified": "NotSpecified", "SoftDelete": "SoftDelete"},
         )
         _args_schema.resource_graph_configuration = AAZObjectArg(
-            options=["--resource-graph-configuration"],
+            options=["--resource-graph-config", "--resource-graph-configuration"],
             arg_group="Properties",
+            help="The resource graph configuration.",
             nullable=True,
         )
         _args_schema.resource_management_options = AAZObjectArg(
-            options=["--resource-management-options"],
+            options=["--resource-mgmt-options", "--resource-management-options"],
             arg_group="Properties",
             help="Resource management options.",
             nullable=True,
@@ -390,15 +442,17 @@ class Update(AAZCommand):
         _args_schema.resource_move_policy = AAZObjectArg(
             options=["--resource-move-policy"],
             arg_group="Properties",
+            help="The resource move policy.",
             nullable=True,
         )
         _args_schema.resource_provider_authorization_rules = AAZObjectArg(
-            options=["--resource-provider-authorization-rules"],
+            options=["--rp-auth-rules", "--resource-provider-authorization-rules"],
             arg_group="Properties",
+            help="The resource provider authorization rules.",
             nullable=True,
         )
         _args_schema.resource_query_management = AAZObjectArg(
-            options=["--resource-query-management"],
+            options=["--resource-query-mgmt", "--resource-query-management"],
             arg_group="Properties",
             help="Resource query management options.",
             nullable=True,
@@ -406,11 +460,12 @@ class Update(AAZCommand):
         _args_schema.resource_sub_type = AAZStrArg(
             options=["--resource-sub-type"],
             arg_group="Properties",
+            help="The resource sub type.",
             nullable=True,
             enum={"AsyncOperation": "AsyncOperation", "NotSpecified": "NotSpecified"},
         )
         _args_schema.resource_type_common_attribute_management = AAZObjectArg(
-            options=["--resource-type-common-attribute-management"],
+            options=["--rt-common-mgmt", "--resource-type-common-attribute-management"],
             arg_group="Properties",
             help="Resource type common attribute management.",
             nullable=True,
@@ -418,6 +473,7 @@ class Update(AAZCommand):
         _args_schema.resource_validation = AAZStrArg(
             options=["--resource-validation"],
             arg_group="Properties",
+            help="The resource validation.",
             nullable=True,
             enum={"NotSpecified": "NotSpecified", "ProfaneWords": "ProfaneWords", "ReservedWords": "ReservedWords"},
         )
@@ -430,18 +486,21 @@ class Update(AAZCommand):
         _args_schema.routing_type = AAZStrArg(
             options=["--routing-type"],
             arg_group="Properties",
-            help="The resource routing type.",
+            help="The resource routing type. The options are: CascadeExtension, Default, Extension, Failover, Fanout, HostBased, LocationBased, ProxyOnly, Tenant. Select multiple with a comma separated string.",
             nullable=True,
             enum={"BypassEndpointSelectionOptimization": "BypassEndpointSelectionOptimization", "CascadeAuthorizedExtension": "CascadeAuthorizedExtension", "CascadeExtension": "CascadeExtension", "ChildFanout": "ChildFanout", "Default": "Default", "Extension": "Extension", "Failover": "Failover", "Fanout": "Fanout", "HostBased": "HostBased", "LocationBased": "LocationBased", "LocationMapping": "LocationMapping", "ProxyOnly": "ProxyOnly", "ServiceFanout": "ServiceFanout", "Tenant": "Tenant"},
         )
         _args_schema.service_tree_infos = AAZListArg(
             options=["--service-tree-infos"],
+            singular_options=["--service-tree-info", "--service-tree-infos"],
             arg_group="Properties",
+            help="The ServiceTree information for the resource provider.",
             nullable=True,
         )
         _args_schema.sku_link = AAZStrArg(
             options=["--sku-link"],
             arg_group="Properties",
+            help="The sku link.",
             nullable=True,
         )
         _args_schema.subscription_lifecycle_notification_specifications = AAZObjectArg(
@@ -450,8 +509,10 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.subscription_state_rules = AAZListArg(
-            options=["--subscription-state-rules"],
+            options=["--sub-state-rules", "--subscription-state-rules"],
+            singular_options=["--sub-state-rule", "--sub-state-rules"],
             arg_group="Properties",
+            help="The subscription state rules.",
             nullable=True,
         )
         _args_schema.super_scale_enabled = AAZBoolArg(
@@ -462,31 +523,39 @@ class Update(AAZCommand):
         _args_schema.supports_tags = AAZBoolArg(
             options=["--supports-tags"],
             arg_group="Properties",
+            help="Determines if tags are supported.",
             nullable=True,
         )
         _args_schema.swagger_specifications = AAZListArg(
             options=["--swagger-specifications"],
+            singular_options=["--swagger-specification", "--swagger-specifications"],
             arg_group="Properties",
+            help="The swagger spec of the resource type.",
             nullable=True,
         )
         _args_schema.template_deployment_options = AAZObjectArg(
-            options=["--template-deployment-options"],
+            options=["--tmplt-deploy-opt", "--template-deployment-options"],
             arg_group="Properties",
+            help="The template deployment options.",
             nullable=True,
         )
         _args_schema.template_deployment_policy = AAZObjectArg(
-            options=["--template-deployment-policy"],
+            options=["--tmplt-deploy-policy", "--template-deployment-policy"],
             arg_group="Properties",
+            help="The template deployment policy.",
             nullable=True,
         )
         _args_schema.throttling_rules = AAZListArg(
             options=["--throttling-rules"],
+            singular_options=["--throttling-rule", "--throttling-rules"],
             arg_group="Properties",
+            help="Enables setting individual limits for different actions in terms of number of requests or number of resources (for collection read requests only).",
             nullable=True,
         )
         _args_schema.token_auth_configuration = AAZObjectArg(
-            options=["--token-auth-configuration"],
+            options=["--token-auth-config", "--token-auth-configuration"],
             arg_group="Properties",
+            help="The token auth configuration.",
             nullable=True,
         )
         cls._build_args_token_auth_configuration_update(_args_schema.token_auth_configuration)
@@ -799,34 +868,6 @@ class Update(AAZCommand):
             help="The type.",
             nullable=True,
             enum={"ArcZone": "ArcZone", "CustomLocation": "CustomLocation", "EdgeZone": "EdgeZone", "NotSpecified": "NotSpecified"},
-        )
-
-        extension_options = cls._args_schema.extension_options
-        extension_options.resource_creation_begin = AAZObjectArg(
-            options=["resource-creation-begin"],
-            nullable=True,
-        )
-
-        resource_creation_begin = cls._args_schema.extension_options.resource_creation_begin
-        resource_creation_begin.request = AAZListArg(
-            options=["request"],
-            nullable=True,
-        )
-        resource_creation_begin.response = AAZListArg(
-            options=["response"],
-            nullable=True,
-        )
-
-        request = cls._args_schema.extension_options.resource_creation_begin.request
-        request.Element = AAZStrArg(
-            nullable=True,
-            enum={"DoNotMergeExistingReadOnlyAndSecretProperties": "DoNotMergeExistingReadOnlyAndSecretProperties", "IncludeInternalMetadata": "IncludeInternalMetadata", "NotSpecified": "NotSpecified"},
-        )
-
-        response = cls._args_schema.extension_options.resource_creation_begin.response
-        response.Element = AAZStrArg(
-            nullable=True,
-            enum={"DoNotMergeExistingReadOnlyAndSecretProperties": "DoNotMergeExistingReadOnlyAndSecretProperties", "IncludeInternalMetadata": "IncludeInternalMetadata", "NotSpecified": "NotSpecified"},
         )
 
         features_rule = cls._args_schema.features_rule
@@ -1402,18 +1443,6 @@ class Update(AAZCommand):
             nullable=True,
         )
 
-        request_header_options = cls._args_schema.request_header_options
-        request_header_options.opt_in_headers = AAZStrArg(
-            options=["opt-in-headers"],
-            nullable=True,
-            enum={"ClientGroupMembership": "ClientGroupMembership", "ClientPrincipalNameEncoded": "ClientPrincipalNameEncoded", "MSIResourceIdEncoded": "MSIResourceIdEncoded", "ManagementGroupAncestorsEncoded": "ManagementGroupAncestorsEncoded", "NotSpecified": "NotSpecified", "PrivateLinkId": "PrivateLinkId", "PrivateLinkResourceId": "PrivateLinkResourceId", "PrivateLinkVnetTrafficTag": "PrivateLinkVnetTrafficTag", "ResourceGroupLocation": "ResourceGroupLocation", "SignedAuxiliaryTokens": "SignedAuxiliaryTokens", "SignedUserToken": "SignedUserToken", "UnboundedClientGroupMembership": "UnboundedClientGroupMembership"},
-        )
-        request_header_options.opt_out_headers = AAZStrArg(
-            options=["opt-out-headers"],
-            nullable=True,
-            enum={"NotSpecified": "NotSpecified", "SystemDataCreatedByLastModifiedBy": "SystemDataCreatedByLastModifiedBy"},
-        )
-
         required_features = cls._args_schema.required_features
         required_features.Element = AAZStrArg(
             nullable=True,
@@ -1810,6 +1839,22 @@ class Update(AAZCommand):
             nullable=True,
             enum={"Disabled": "Disabled", "Enabled": "Enabled"},
         )
+
+        # define Arg Group "RequestHeaderOptions"
+
+        _args_schema = cls._args_schema
+        _args_schema.opt_in_headers = AAZStrArg(
+            options=["--opt-in-headers"],
+            arg_group="RequestHeaderOptions",
+            nullable=True,
+            enum={"ClientGroupMembership": "ClientGroupMembership", "ClientPrincipalNameEncoded": "ClientPrincipalNameEncoded", "MSIResourceIdEncoded": "MSIResourceIdEncoded", "ManagementGroupAncestorsEncoded": "ManagementGroupAncestorsEncoded", "NotSpecified": "NotSpecified", "PrivateLinkId": "PrivateLinkId", "PrivateLinkResourceId": "PrivateLinkResourceId", "PrivateLinkVnetTrafficTag": "PrivateLinkVnetTrafficTag", "ResourceGroupLocation": "ResourceGroupLocation", "SignedAuxiliaryTokens": "SignedAuxiliaryTokens", "SignedUserToken": "SignedUserToken", "UnboundedClientGroupMembership": "UnboundedClientGroupMembership"},
+        )
+        _args_schema.opt_out_headers = AAZStrArg(
+            options=["--opt-out-headers"],
+            arg_group="RequestHeaderOptions",
+            nullable=True,
+            enum={"NotSpecified": "NotSpecified", "SystemDataCreatedByLastModifiedBy": "SystemDataCreatedByLastModifiedBy"},
+        )
         return cls._args_schema
 
     _args_service_tree_info_update = None
@@ -2144,7 +2189,7 @@ class Update(AAZCommand):
                 properties.set_prop("enableThirdPartyS2S", AAZBoolType, ".enable_third_party_s2_s")
                 properties.set_prop("endpoints", AAZListType, ".endpoints")
                 properties.set_prop("extendedLocations", AAZListType, ".extended_locations")
-                properties.set_prop("extensionOptions", AAZObjectType, ".extension_options")
+                properties.set_prop("extensionOptions", AAZObjectType)
                 properties.set_prop("featuresRule", AAZObjectType, ".features_rule")
                 properties.set_prop("frontdoorRequestMode", AAZStrType, ".frontdoor_request_mode")
                 properties.set_prop("groupingTag", AAZStrType, ".grouping_tag")
@@ -2171,7 +2216,7 @@ class Update(AAZCommand):
                 properties.set_prop("privateEndpointConfiguration", AAZObjectType, ".private_endpoint_configuration")
                 properties.set_prop("quotaRule", AAZObjectType, ".quota_rule")
                 properties.set_prop("regionality", AAZStrType, ".regionality")
-                properties.set_prop("requestHeaderOptions", AAZObjectType, ".request_header_options")
+                properties.set_prop("requestHeaderOptions", AAZObjectType)
                 properties.set_prop("requiredFeatures", AAZListType, ".required_features")
                 properties.set_prop("resourceCache", AAZObjectType, ".resource_cache")
                 properties.set_prop("resourceConcurrencyControlOptions", AAZDictType, ".resource_concurrency_control_options")

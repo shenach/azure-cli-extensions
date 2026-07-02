@@ -17,7 +17,7 @@ from azure.cli.core.aaz import *
 class Create(AAZCommand):
     """Create the resource type skus in the given resource type.
 
-    :example: Skus_CreateOrUpdateNestedResourceTypeSecond
+    :example: sku nested-resource-type-second create
         az providerhub sku nested-resource-type-second create --nested-resource-type-first "nestedResourceTypeFirst" --nested-resource-type-second "nestedResourceTypeSecond" --sku-settings [{"name":"freeSku","kind":"Standard","tier":"Tier1"},{"name":"premiumSku","costs":[{"meterId":"xxx"}],"kind":"Premium","tier":"Tier2"}] --provider-namespace "{providerNamespace}" --resource-type "{resourceType}" --sku "{skuName}"
     """
 

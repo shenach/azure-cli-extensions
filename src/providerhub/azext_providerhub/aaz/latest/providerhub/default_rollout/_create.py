@@ -60,6 +60,32 @@ class Create(AAZCommand):
             ),
         )
 
+        # define Arg Group "ManifestCheckinSpecification"
+
+        _args_schema = cls._args_schema
+        _args_schema.manifest_checkin_option = AAZStrArg(
+            options=["--manifest-checkin-option"],
+            arg_group="ManifestCheckinSpecification",
+            default="DoNotAttemptAutomaticManifestCheckin",
+            enum={"AttemptAutomaticManifestCheckin": "AttemptAutomaticManifestCheckin", "DoNotAttemptAutomaticManifestCheckin": "DoNotAttemptAutomaticManifestCheckin"},
+        )
+        _args_schema.manifest_checkin_params = AAZObjectArg(
+            options=["--manifest-checkin-params"],
+            arg_group="ManifestCheckinSpecification",
+        )
+
+        manifest_checkin_params = cls._args_schema.manifest_checkin_params
+        manifest_checkin_params.baseline_arm_manifest_location = AAZStrArg(
+            options=["baseline-arm-manifest-location"],
+            help="The baseline ARM manifest location supplied to the checkin manifest operation.",
+            required=True,
+        )
+        manifest_checkin_params.environment = AAZStrArg(
+            options=["environment"],
+            help="The environment supplied to the checkin manifest operation.",
+            required=True,
+        )
+
         # define Arg Group "Properties"
 
         _args_schema = cls._args_schema
@@ -126,6 +152,7 @@ class Create(AAZCommand):
         _args_schema.canary = AAZObjectArg(
             options=["--canary"],
             arg_group="Specification",
+            help="The canary regions to skip.",
         )
         _args_schema.expedited_rollout = AAZObjectArg(
             options=["--expedited-rollout"],
@@ -139,10 +166,6 @@ class Create(AAZCommand):
             options=["--low-traffic"],
             arg_group="Specification",
         )
-        _args_schema.manifest_checkin_specification = AAZObjectArg(
-            options=["--manifest-checkin-specification"],
-            arg_group="Specification",
-        )
         _args_schema.medium_traffic = AAZObjectArg(
             options=["--medium-traffic"],
             arg_group="Specification",
@@ -152,16 +175,19 @@ class Create(AAZCommand):
             arg_group="Specification",
         )
         _args_schema.resource_type_registrations = AAZListArg(
-            options=["--resource-type-registrations"],
+            options=["--rt-regs", "--resource-type-registrations"],
             arg_group="Specification",
+            help="The resource type registrations.",
         )
         _args_schema.rest_of_the_world_group_one = AAZObjectArg(
-            options=["--rest-of-the-world-group-one"],
+            options=["--row1", "--rest-of-the-world-group-one"],
             arg_group="Specification",
+            help="The rest of the world group one options.",
         )
         _args_schema.rest_of_the_world_group_two = AAZObjectArg(
-            options=["--rest-of-the-world-group-two"],
+            options=["--row2", "--rest-of-the-world-group-two"],
             arg_group="Specification",
+            help="The rest of the world group two options.",
         )
 
         auto_provision_config = cls._args_schema.auto_provision_config
@@ -178,6 +204,7 @@ class Create(AAZCommand):
         )
         canary.skip_regions = AAZListArg(
             options=["skip-regions"],
+            help="The canary skip regions.",
         )
 
         regions = cls._args_schema.canary.regions
@@ -213,28 +240,6 @@ class Create(AAZCommand):
 
         regions = cls._args_schema.low_traffic.regions
         regions.Element = AAZStrArg()
-
-        manifest_checkin_specification = cls._args_schema.manifest_checkin_specification
-        manifest_checkin_specification.manifest_checkin_option = AAZStrArg(
-            options=["manifest-checkin-option"],
-            default="DoNotAttemptAutomaticManifestCheckin",
-            enum={"AttemptAutomaticManifestCheckin": "AttemptAutomaticManifestCheckin", "DoNotAttemptAutomaticManifestCheckin": "DoNotAttemptAutomaticManifestCheckin"},
-        )
-        manifest_checkin_specification.manifest_checkin_params = AAZObjectArg(
-            options=["manifest-checkin-params"],
-        )
-
-        manifest_checkin_params = cls._args_schema.manifest_checkin_specification.manifest_checkin_params
-        manifest_checkin_params.baseline_arm_manifest_location = AAZStrArg(
-            options=["baseline-arm-manifest-location"],
-            help="The baseline ARM manifest location supplied to the checkin manifest operation.",
-            required=True,
-        )
-        manifest_checkin_params.environment = AAZStrArg(
-            options=["environment"],
-            help="The environment supplied to the checkin manifest operation.",
-            required=True,
-        )
 
         medium_traffic = cls._args_schema.medium_traffic
         medium_traffic.regions = AAZListArg(
@@ -2576,7 +2581,7 @@ class Create(AAZCommand):
                 specification.set_prop("expeditedRollout", AAZObjectType, ".expedited_rollout")
                 specification.set_prop("highTraffic", AAZObjectType, ".high_traffic")
                 specification.set_prop("lowTraffic", AAZObjectType, ".low_traffic")
-                specification.set_prop("manifestCheckinSpecification", AAZObjectType, ".manifest_checkin_specification")
+                specification.set_prop("manifestCheckinSpecification", AAZObjectType)
                 specification.set_prop("mediumTraffic", AAZObjectType, ".medium_traffic")
                 specification.set_prop("providerRegistration", AAZObjectType, ".provider_registration")
                 specification.set_prop("resourceTypeRegistrations", AAZListType, ".resource_type_registrations")

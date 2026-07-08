@@ -142,6 +142,7 @@ class Update(AAZCommand):
         _args_schema.canary = AAZObjectArg(
             options=["--canary"],
             arg_group="Specification",
+            help="The canary regions to skip.",
             nullable=True,
         )
         _args_schema.expedited_rollout = AAZObjectArg(
@@ -160,8 +161,9 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.manifest_checkin_specification = AAZObjectArg(
-            options=["--manifest-checkin-specification"],
+            options=["--manifest-checkin-spec", "--manifest-checkin-specification"],
             arg_group="Specification",
+            help="The manifest checkin specification.",
             nullable=True,
         )
         _args_schema.medium_traffic = AAZObjectArg(
@@ -175,18 +177,21 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.resource_type_registrations = AAZListArg(
-            options=["--resource-type-registrations"],
+            options=["--rt-regs", "--resource-type-registrations"],
             arg_group="Specification",
+            help="The resource type registrations.",
             nullable=True,
         )
         _args_schema.rest_of_the_world_group_one = AAZObjectArg(
-            options=["--rest-of-the-world-group-one"],
+            options=["--row1", "--rest-of-the-world-group-one"],
             arg_group="Specification",
+            help="The rest of the world group one options.",
             nullable=True,
         )
         _args_schema.rest_of_the_world_group_two = AAZObjectArg(
-            options=["--rest-of-the-world-group-two"],
+            options=["--row2", "--rest-of-the-world-group-two"],
             arg_group="Specification",
+            help="The rest of the world group two options.",
             nullable=True,
         )
 
@@ -207,6 +212,7 @@ class Update(AAZCommand):
         )
         canary.skip_regions = AAZListArg(
             options=["skip-regions"],
+            help="The canary skip regions.",
             nullable=True,
         )
 
@@ -259,12 +265,14 @@ class Update(AAZCommand):
 
         manifest_checkin_specification = cls._args_schema.manifest_checkin_specification
         manifest_checkin_specification.manifest_checkin_option = AAZStrArg(
-            options=["manifest-checkin-option"],
+            options=["checkin-option", "manifest-checkin-option"],
+            help="The manifest checkin option.",
             nullable=True,
             enum={"AttemptAutomaticManifestCheckin": "AttemptAutomaticManifestCheckin", "DoNotAttemptAutomaticManifestCheckin": "DoNotAttemptAutomaticManifestCheckin"},
         )
         manifest_checkin_specification.manifest_checkin_params = AAZObjectArg(
-            options=["manifest-checkin-params"],
+            options=["checkin-params", "manifest-checkin-params"],
+            help="The manifest checkin params.",
             nullable=True,
         )
 

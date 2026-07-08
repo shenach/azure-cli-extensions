@@ -55,8 +55,9 @@ class Create(AAZCommand):
 
         _args_schema = cls._args_schema
         _args_schema.required_features_policy = AAZStrArg(
-            options=["--required-features-policy"],
+            options=["--req-features-policy", "--required-features-policy"],
             arg_group="FeaturesRule",
+            help="The accepted values are \"Any\" or \"All\".",
             enum={"All": "All", "Any": "Any"},
         )
 
@@ -66,6 +67,7 @@ class Create(AAZCommand):
         _args_schema.authorization_owners = AAZListArg(
             options=["--authorization-owners"],
             arg_group="Management",
+            help="The authorization owners.",
         )
         _args_schema.canary_manifest_owners = AAZListArg(
             options=["--canary-manifest-owners"],
@@ -73,17 +75,17 @@ class Create(AAZCommand):
             help="List of manifest owners for canary.",
         )
         _args_schema.error_response_message_options = AAZObjectArg(
-            options=["--error-response-message-options"],
+            options=["--message-options", "--error-response-message-options"],
             arg_group="Management",
             help="Options for error response messages.",
         )
         _args_schema.expedited_rollout_metadata = AAZObjectArg(
-            options=["--expedited-rollout-metadata"],
+            options=["--rollout-metadata", "--expedited-rollout-metadata"],
             arg_group="Management",
             help="Metadata for expedited rollout.",
         )
         _args_schema.expedited_rollout_submitters = AAZListArg(
-            options=["--expedited-rollout-submitters"],
+            options=["--rollout-submitters", "--expedited-rollout-submitters"],
             arg_group="Management",
             help="List of expedited rollout submitters.",
         )
@@ -101,16 +103,20 @@ class Create(AAZCommand):
             arg_group="Management",
         )
         _args_schema.incident_routing_service = AAZStrArg(
-            options=["--incident-routing-service"],
+            options=["--incident-service", "--incident-routing-service"],
             arg_group="Management",
+            help="The service in IcM when creating or transferring incidents to the RP.",
         )
         _args_schema.incident_routing_team = AAZStrArg(
-            options=["--incident-routing-team"],
+            options=["--incident-team", "--incident-routing-team"],
             arg_group="Management",
+            help="The team in IcM when creating or transferring incidents to the RP.",
         )
         _args_schema.manifest_owners = AAZListArg(
             options=["--manifest-owners"],
+            singular_options=["--manifest-owner"],
             arg_group="Management",
+            help="Specifies an array of required ACIS claims to modify the resource provider's manifest content via ACIS.",
         )
         _args_schema.pc_code = AAZStrArg(
             options=["--pc-code"],
@@ -118,26 +124,32 @@ class Create(AAZCommand):
             help="The profit center code for the subscription.",
         )
         _args_schema.profit_center_program_id = AAZStrArg(
-            options=["--profit-center-program-id"],
+            options=["--pc-program-id", "--profit-center-program-id"],
             arg_group="Management",
             help="The profit center program id for the subscription.",
         )
         _args_schema.resource_access_policy = AAZStrArg(
             options=["--resource-access-policy"],
             arg_group="Management",
+            help="The resource access policy.",
             enum={"AcisActionAllowed": "AcisActionAllowed", "AcisReadAllowed": "AcisReadAllowed", "NotSpecified": "NotSpecified"},
         )
         _args_schema.resource_access_roles = AAZListArg(
             options=["--resource-access-roles"],
             arg_group="Management",
+            help="The resource access roles.",
         )
         _args_schema.schema_owners = AAZListArg(
             options=["--schema-owners"],
+            singular_options=["--schema-owner", "--schema-owners"],
             arg_group="Management",
+            help="Specifies an array of needed ACIS claims to modify the resource provider schema via ACIS.",
         )
         _args_schema.service_tree_infos = AAZListArg(
             options=["--service-tree-infos"],
+            singular_options=["--service-tree-info", "--service-tree-infos"],
             arg_group="Management",
+            help="The ServiceTree information for the resource provider.",
         )
 
         authorization_owners = cls._args_schema.authorization_owners
@@ -222,7 +234,8 @@ class Create(AAZCommand):
             enum={"Direct": "Direct", "Hybrid": "Hybrid", "Managed": "Managed"},
         )
         _args_schema.capabilities = AAZListArg(
-            options=["--capability", "--capabilities"],
+            options=["--capabilities"],
+            singular_options=["--capability", "--capabilities"],
             arg_group="Properties",
             help="This allows a restrictive subscription type to have access to register and use the Resource Provider.",
         )
@@ -582,11 +595,14 @@ class Create(AAZCommand):
         provider_hub_metadata.global_async_operation_resource_type_name = AAZStrArg(
             options=["global-async-operation-resource-type-name"],
         )
-        provider_hub_metadata.provider_authentication = AAZObjectArg(
-            options=["provider-authentication"],
+        provider_hub_metadata.providerhub_metadata_authentication = AAZObjectArg(
+            options=["metadata-authn", "provider-authentication", "providerhub-metadata-authentication"],
+            help="The ProviderHub metadata authorizations.",
         )
-        provider_hub_metadata.provider_authorizations = AAZListArg(
-            options=["provider-authorizations"],
+        provider_hub_metadata.providerhub_metadata_authorizations = AAZListArg(
+            options=["metadata-authz", "provider-authorizations", "providerhub-metadata-authorizations"],
+            singular_options=["providerhub-metadata-authorization", "providerhub-metadata-authorizations"],
+            help="The ProviderHub metadata authorizations.",
         )
         provider_hub_metadata.regional_async_operation_resource_type_name = AAZStrArg(
             options=["regional-async-operation-resource-type-name"],
@@ -595,18 +611,18 @@ class Create(AAZCommand):
             options=["third-party-provider-authorization"],
         )
 
-        provider_authentication = cls._args_schema.provider_hub_metadata.provider_authentication
-        provider_authentication.allowed_audiences = AAZListArg(
+        providerhub_metadata_authentication = cls._args_schema.provider_hub_metadata.providerhub_metadata_authentication
+        providerhub_metadata_authentication.allowed_audiences = AAZListArg(
             options=["allowed-audiences"],
             required=True,
         )
 
-        allowed_audiences = cls._args_schema.provider_hub_metadata.provider_authentication.allowed_audiences
+        allowed_audiences = cls._args_schema.provider_hub_metadata.providerhub_metadata_authentication.allowed_audiences
         allowed_audiences.Element = AAZStrArg()
 
-        provider_authorizations = cls._args_schema.provider_hub_metadata.provider_authorizations
-        provider_authorizations.Element = AAZObjectArg()
-        cls._build_args_resource_provider_authorization_create(provider_authorizations.Element)
+        providerhub_metadata_authorizations = cls._args_schema.provider_hub_metadata.providerhub_metadata_authorizations
+        providerhub_metadata_authorizations.Element = AAZObjectArg()
+        cls._build_args_resource_provider_authorization_create(providerhub_metadata_authorizations.Element)
 
         third_party_provider_authorization = cls._args_schema.provider_hub_metadata.third_party_provider_authorization
         third_party_provider_authorization.authorizations = AAZListArg(
@@ -685,6 +701,7 @@ class Create(AAZCommand):
         _element = cls._args_schema.services.Element
         _element.service_name = AAZStrArg(
             options=["service-name"],
+            help="The service name.",
         )
         _element.status = AAZStrArg(
             options=["status"],
@@ -710,11 +727,13 @@ class Create(AAZCommand):
         _args_schema.opt_in_headers = AAZStrArg(
             options=["--opt-in-headers"],
             arg_group="RequestHeaderOptions",
+            help="The opt-in headers.",
             enum={"ClientGroupMembership": "ClientGroupMembership", "ClientPrincipalNameEncoded": "ClientPrincipalNameEncoded", "MSIResourceIdEncoded": "MSIResourceIdEncoded", "ManagementGroupAncestorsEncoded": "ManagementGroupAncestorsEncoded", "NotSpecified": "NotSpecified", "PrivateLinkId": "PrivateLinkId", "PrivateLinkResourceId": "PrivateLinkResourceId", "PrivateLinkVnetTrafficTag": "PrivateLinkVnetTrafficTag", "ResourceGroupLocation": "ResourceGroupLocation", "SignedAuxiliaryTokens": "SignedAuxiliaryTokens", "SignedUserToken": "SignedUserToken", "UnboundedClientGroupMembership": "UnboundedClientGroupMembership"},
         )
         _args_schema.opt_out_headers = AAZStrArg(
             options=["--opt-out-headers"],
             arg_group="RequestHeaderOptions",
+            help="The opt-out headers.",
             enum={"NotSpecified": "NotSpecified", "SystemDataCreatedByLastModifiedBy": "SystemDataCreatedByLastModifiedBy"},
         )
 
@@ -1299,8 +1318,8 @@ class Create(AAZCommand):
             if provider_hub_metadata is not None:
                 provider_hub_metadata.set_prop("directRpRoleDefinitionId", AAZStrType, ".direct_rp_role_definition_id")
                 provider_hub_metadata.set_prop("globalAsyncOperationResourceTypeName", AAZStrType, ".global_async_operation_resource_type_name")
-                provider_hub_metadata.set_prop("providerAuthentication", AAZObjectType, ".provider_authentication")
-                provider_hub_metadata.set_prop("providerAuthorizations", AAZListType, ".provider_authorizations")
+                provider_hub_metadata.set_prop("providerAuthentication", AAZObjectType, ".providerhub_metadata_authentication")
+                provider_hub_metadata.set_prop("providerAuthorizations", AAZListType, ".providerhub_metadata_authorizations")
                 provider_hub_metadata.set_prop("regionalAsyncOperationResourceTypeName", AAZStrType, ".regional_async_operation_resource_type_name")
                 provider_hub_metadata.set_prop("thirdPartyProviderAuthorization", AAZObjectType, ".third_party_provider_authorization")
 

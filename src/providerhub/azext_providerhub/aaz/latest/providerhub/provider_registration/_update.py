@@ -58,8 +58,9 @@ class Update(AAZCommand):
 
         _args_schema = cls._args_schema
         _args_schema.required_features_policy = AAZStrArg(
-            options=["--required-features-policy"],
+            options=["--req-features-policy", "--required-features-policy"],
             arg_group="FeaturesRule",
+            help="The accepted values are \"Any\" or \"All\".",
             enum={"All": "All", "Any": "Any"},
         )
 
@@ -69,6 +70,7 @@ class Update(AAZCommand):
         _args_schema.authorization_owners = AAZListArg(
             options=["--authorization-owners"],
             arg_group="Management",
+            help="The authorization owners.",
             nullable=True,
         )
         _args_schema.canary_manifest_owners = AAZListArg(
@@ -78,19 +80,19 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.error_response_message_options = AAZObjectArg(
-            options=["--error-response-message-options"],
+            options=["--message-options", "--error-response-message-options"],
             arg_group="Management",
             help="Options for error response messages.",
             nullable=True,
         )
         _args_schema.expedited_rollout_metadata = AAZObjectArg(
-            options=["--expedited-rollout-metadata"],
+            options=["--rollout-metadata", "--expedited-rollout-metadata"],
             arg_group="Management",
             help="Metadata for expedited rollout.",
             nullable=True,
         )
         _args_schema.expedited_rollout_submitters = AAZListArg(
-            options=["--expedited-rollout-submitters"],
+            options=["--rollout-submitters", "--expedited-rollout-submitters"],
             arg_group="Management",
             help="List of expedited rollout submitters.",
             nullable=True,
@@ -109,21 +111,26 @@ class Update(AAZCommand):
         _args_schema.incident_contact_email = AAZStrArg(
             options=["--incident-contact-email"],
             arg_group="Management",
+            help="The email address of contacts for incidents related to the RP.",
             nullable=True,
         )
         _args_schema.incident_routing_service = AAZStrArg(
-            options=["--incident-routing-service"],
+            options=["--incident-service", "--incident-routing-service"],
             arg_group="Management",
+            help="The service in IcM when creating or transferring incidents to the RP.",
             nullable=True,
         )
         _args_schema.incident_routing_team = AAZStrArg(
-            options=["--incident-routing-team"],
+            options=["--incident-team", "--incident-routing-team"],
             arg_group="Management",
+            help="The team in IcM when creating or transferring incidents to the RP.",
             nullable=True,
         )
         _args_schema.manifest_owners = AAZListArg(
             options=["--manifest-owners"],
+            singular_options=["--manifest-owner"],
             arg_group="Management",
+            help="Specifies an array of required ACIS claims to modify the resource provider's manifest content via ACIS.",
             nullable=True,
         )
         _args_schema.pc_code = AAZStrArg(
@@ -133,7 +140,7 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.profit_center_program_id = AAZStrArg(
-            options=["--profit-center-program-id"],
+            options=["--pc-program-id", "--profit-center-program-id"],
             arg_group="Management",
             help="The profit center program id for the subscription.",
             nullable=True,
@@ -141,22 +148,28 @@ class Update(AAZCommand):
         _args_schema.resource_access_policy = AAZStrArg(
             options=["--resource-access-policy"],
             arg_group="Management",
+            help="The resource access policy.",
             nullable=True,
             enum={"AcisActionAllowed": "AcisActionAllowed", "AcisReadAllowed": "AcisReadAllowed", "NotSpecified": "NotSpecified"},
         )
         _args_schema.resource_access_roles = AAZListArg(
             options=["--resource-access-roles"],
             arg_group="Management",
+            help="The resource access roles.",
             nullable=True,
         )
         _args_schema.schema_owners = AAZListArg(
             options=["--schema-owners"],
+            singular_options=["--schema-owner", "--schema-owners"],
             arg_group="Management",
+            help="Specifies an array of needed ACIS claims to modify the resource provider schema via ACIS.",
             nullable=True,
         )
         _args_schema.service_tree_infos = AAZListArg(
             options=["--service-tree-infos"],
+            singular_options=["--service-tree-info", "--service-tree-infos"],
             arg_group="Management",
+            help="The ServiceTree information for the resource provider.",
             nullable=True,
         )
 
@@ -272,7 +285,8 @@ class Update(AAZCommand):
             enum={"Direct": "Direct", "Hybrid": "Hybrid", "Managed": "Managed"},
         )
         _args_schema.capabilities = AAZListArg(
-            options=["--capability", "--capabilities"],
+            options=["--capabilities"],
+            singular_options=["--capability", "--capabilities"],
             arg_group="Properties",
             help="This allows a restrictive subscription type to have access to register and use the Resource Provider.",
             nullable=True,
@@ -425,11 +439,6 @@ class Update(AAZCommand):
             help="The provider version.",
             nullable=True,
         )
-        _args_schema.request_header_options = AAZObjectArg(
-            options=["--request-header-options"],
-            arg_group="Properties",
-            nullable=True,
-        )
         _args_schema.required_features = AAZListArg(
             options=["--required-features"],
             arg_group="Properties",
@@ -470,11 +479,6 @@ class Update(AAZCommand):
             options=["--services"],
             arg_group="Properties",
             help="The services.",
-            nullable=True,
-        )
-        _args_schema.subscription_lifecycle_notification_specifications = AAZObjectArg(
-            options=["--subscription-lifecycle-notification-specifications"],
-            arg_group="Properties",
             nullable=True,
         )
         _args_schema.template_deployment_options = AAZObjectArg(
@@ -769,6 +773,7 @@ class Update(AAZCommand):
         )
         third_party_provider_authorization.managed_by_tenant_id = AAZStrArg(
             options=["managed-by-tenant-id"],
+            help="The managed by tenant ID.",
             nullable=True,
         )
 
@@ -783,18 +788,6 @@ class Update(AAZCommand):
         )
         _element.role_definition_id = AAZStrArg(
             options=["role-definition-id"],
-        )
-
-        request_header_options = cls._args_schema.request_header_options
-        request_header_options.opt_in_headers = AAZStrArg(
-            options=["opt-in-headers"],
-            nullable=True,
-            enum={"ClientGroupMembership": "ClientGroupMembership", "ClientPrincipalNameEncoded": "ClientPrincipalNameEncoded", "MSIResourceIdEncoded": "MSIResourceIdEncoded", "ManagementGroupAncestorsEncoded": "ManagementGroupAncestorsEncoded", "NotSpecified": "NotSpecified", "PrivateLinkId": "PrivateLinkId", "PrivateLinkResourceId": "PrivateLinkResourceId", "PrivateLinkVnetTrafficTag": "PrivateLinkVnetTrafficTag", "ResourceGroupLocation": "ResourceGroupLocation", "SignedAuxiliaryTokens": "SignedAuxiliaryTokens", "SignedUserToken": "SignedUserToken", "UnboundedClientGroupMembership": "UnboundedClientGroupMembership"},
-        )
-        request_header_options.opt_out_headers = AAZStrArg(
-            options=["opt-out-headers"],
-            nullable=True,
-            enum={"NotSpecified": "NotSpecified", "SystemDataCreatedByLastModifiedBy": "SystemDataCreatedByLastModifiedBy"},
         )
 
         required_features = cls._args_schema.required_features
@@ -870,37 +863,13 @@ class Update(AAZCommand):
         _element = cls._args_schema.services.Element
         _element.service_name = AAZStrArg(
             options=["service-name"],
+            help="The service name.",
             nullable=True,
         )
         _element.status = AAZStrArg(
             options=["status"],
             nullable=True,
             enum={"Active": "Active", "Inactive": "Inactive"},
-        )
-
-        subscription_lifecycle_notification_specifications = cls._args_schema.subscription_lifecycle_notification_specifications
-        subscription_lifecycle_notification_specifications.soft_delete_ttl = AAZDurationArg(
-            options=["soft-delete-ttl"],
-            nullable=True,
-        )
-        subscription_lifecycle_notification_specifications.subscription_state_override_actions = AAZListArg(
-            options=["subscription-state-override-actions"],
-            nullable=True,
-        )
-
-        subscription_state_override_actions = cls._args_schema.subscription_lifecycle_notification_specifications.subscription_state_override_actions
-        subscription_state_override_actions.Element = AAZObjectArg(
-            nullable=True,
-        )
-
-        _element = cls._args_schema.subscription_lifecycle_notification_specifications.subscription_state_override_actions.Element
-        _element.action = AAZStrArg(
-            options=["action"],
-            enum={"BillingCancellation": "BillingCancellation", "DeleteAllResources": "DeleteAllResources", "NoOp": "NoOp", "NotDefined": "NotDefined", "SoftDeleteAllResources": "SoftDeleteAllResources", "UndoSoftDelete": "UndoSoftDelete"},
-        )
-        _element.state = AAZStrArg(
-            options=["state"],
-            enum={"Deleted": "Deleted", "Registered": "Registered", "Suspended": "Suspended", "SuspendedToDeleted": "SuspendedToDeleted", "SuspendedToRegistered": "SuspendedToRegistered", "SuspendedToUnregistered": "SuspendedToUnregistered", "SuspendedToWarned": "SuspendedToWarned", "Unregistered": "Unregistered", "Warned": "Warned", "WarnedToDeleted": "WarnedToDeleted", "WarnedToRegistered": "WarnedToRegistered", "WarnedToSuspended": "WarnedToSuspended", "WarnedToUnregistered": "WarnedToUnregistered"},
         )
 
         template_deployment_options = cls._args_schema.template_deployment_options
@@ -917,6 +886,51 @@ class Update(AAZCommand):
         preflight_options.Element = AAZStrArg(
             nullable=True,
             enum={"ContinueDeploymentOnFailure": "ContinueDeploymentOnFailure", "DefaultValidationOnly": "DefaultValidationOnly", "None": "None"},
+        )
+
+        # define Arg Group "RequestHeaderOptions"
+
+        _args_schema = cls._args_schema
+        _args_schema.opt_in_headers = AAZStrArg(
+            options=["--opt-in-headers"],
+            arg_group="RequestHeaderOptions",
+            nullable=True,
+            enum={"ClientGroupMembership": "ClientGroupMembership", "ClientPrincipalNameEncoded": "ClientPrincipalNameEncoded", "MSIResourceIdEncoded": "MSIResourceIdEncoded", "ManagementGroupAncestorsEncoded": "ManagementGroupAncestorsEncoded", "NotSpecified": "NotSpecified", "PrivateLinkId": "PrivateLinkId", "PrivateLinkResourceId": "PrivateLinkResourceId", "PrivateLinkVnetTrafficTag": "PrivateLinkVnetTrafficTag", "ResourceGroupLocation": "ResourceGroupLocation", "SignedAuxiliaryTokens": "SignedAuxiliaryTokens", "SignedUserToken": "SignedUserToken", "UnboundedClientGroupMembership": "UnboundedClientGroupMembership"},
+        )
+        _args_schema.opt_out_headers = AAZStrArg(
+            options=["--opt-out-headers"],
+            arg_group="RequestHeaderOptions",
+            nullable=True,
+            enum={"NotSpecified": "NotSpecified", "SystemDataCreatedByLastModifiedBy": "SystemDataCreatedByLastModifiedBy"},
+        )
+
+        # define Arg Group "SubscriptionLifecycleNotificationSpecifications"
+
+        _args_schema = cls._args_schema
+        _args_schema.soft_delete_ttl = AAZDurationArg(
+            options=["--soft-delete-ttl"],
+            arg_group="SubscriptionLifecycleNotificationSpecifications",
+            nullable=True,
+        )
+        _args_schema.subscription_state_override_actions = AAZListArg(
+            options=["--subscription-state-override-actions"],
+            arg_group="SubscriptionLifecycleNotificationSpecifications",
+            nullable=True,
+        )
+
+        subscription_state_override_actions = cls._args_schema.subscription_state_override_actions
+        subscription_state_override_actions.Element = AAZObjectArg(
+            nullable=True,
+        )
+
+        _element = cls._args_schema.subscription_state_override_actions.Element
+        _element.action = AAZStrArg(
+            options=["action"],
+            enum={"BillingCancellation": "BillingCancellation", "DeleteAllResources": "DeleteAllResources", "NoOp": "NoOp", "NotDefined": "NotDefined", "SoftDeleteAllResources": "SoftDeleteAllResources", "UndoSoftDelete": "UndoSoftDelete"},
+        )
+        _element.state = AAZStrArg(
+            options=["state"],
+            enum={"Deleted": "Deleted", "Registered": "Registered", "Suspended": "Suspended", "SuspendedToDeleted": "SuspendedToDeleted", "SuspendedToRegistered": "SuspendedToRegistered", "SuspendedToUnregistered": "SuspendedToUnregistered", "SuspendedToWarned": "SuspendedToWarned", "Unregistered": "Unregistered", "Warned": "Warned", "WarnedToDeleted": "WarnedToDeleted", "WarnedToRegistered": "WarnedToRegistered", "WarnedToSuspended": "WarnedToSuspended", "WarnedToUnregistered": "WarnedToUnregistered"},
         )
         return cls._args_schema
 
@@ -1397,7 +1411,7 @@ class Update(AAZCommand):
                 properties.set_prop("providerHubMetadata", AAZObjectType, ".provider_hub_metadata")
                 properties.set_prop("providerType", AAZStrType, ".provider_type")
                 properties.set_prop("providerVersion", AAZStrType, ".provider_version")
-                properties.set_prop("requestHeaderOptions", AAZObjectType, ".request_header_options")
+                properties.set_prop("requestHeaderOptions", AAZObjectType)
                 properties.set_prop("requiredFeatures", AAZListType, ".required_features")
                 properties.set_prop("resourceGroupLockOptionDuringMove", AAZObjectType, ".resource_group_lock_option_during_move")
                 properties.set_prop("resourceHydrationAccounts", AAZListType, ".resource_hydration_accounts")
@@ -1405,7 +1419,7 @@ class Update(AAZCommand):
                 properties.set_prop("responseOptions", AAZObjectType, ".response_options")
                 properties.set_prop("serviceName", AAZStrType, ".service_name")
                 properties.set_prop("services", AAZListType, ".services")
-                properties.set_prop("subscriptionLifecycleNotificationSpecifications", AAZObjectType, ".subscription_lifecycle_notification_specifications")
+                properties.set_prop("subscriptionLifecycleNotificationSpecifications", AAZObjectType)
                 properties.set_prop("templateDeploymentOptions", AAZObjectType, ".template_deployment_options")
                 _UpdateHelper._build_schema_token_auth_configuration_update(properties.set_prop("tokenAuthConfiguration", AAZObjectType, ".token_auth_configuration"))
 

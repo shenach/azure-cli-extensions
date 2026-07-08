@@ -96,8 +96,9 @@ class Update(AAZCommand):
 
         _args_schema = cls._args_schema
         _args_schema.required_features_policy = AAZStrArg(
-            options=["--required-features-policy"],
+            options=["--req-features-policy", "--required-features-policy"],
             arg_group="FeaturesRule",
+            help="The accepted values are \"Any\" or \"All\".",
             enum={"All": "All", "Any": "Any"},
         )
 
@@ -310,7 +311,7 @@ class Update(AAZCommand):
             nullable=True,
         )
         _args_schema.linked_access_checks = AAZListArg(
-            options=["--linked-access-check", "--linked-access-checks"],
+            options=["--linked-access-checks"],
             singular_options=["--linked-access-check", "--linked-access-checks"],
             arg_group="Properties",
             help="Enables additional Role Based Access Control (RBAC) checks on related resources.",
@@ -1861,11 +1862,13 @@ class Update(AAZCommand):
         _args_schema.soft_delete_ttl = AAZDurationArg(
             options=["--soft-delete-ttl"],
             arg_group="SubscriptionLifecycleNotificationSpecifications",
+            help="The soft delete time to live.",
             nullable=True,
         )
         _args_schema.subscription_state_override_actions = AAZListArg(
-            options=["--subscription-state-override-actions"],
+            options=["--override-actions", "--subscription-state-override-actions"],
             arg_group="SubscriptionLifecycleNotificationSpecifications",
+            help="The subscription state override actions.",
             nullable=True,
         )
 

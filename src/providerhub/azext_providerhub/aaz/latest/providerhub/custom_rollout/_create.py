@@ -139,6 +139,7 @@ class Create(AAZCommand):
         _args_schema.canary = AAZObjectArg(
             options=["--canary"],
             arg_group="Specification",
+            help="The canary regions to apply the manifest.",
         )
         _args_schema.manifest_checkin_specification = AAZObjectArg(
             options=["--manifest-checkin-spec", "--manifest-checkin-specification"],

@@ -64,14 +64,16 @@ class Create(AAZCommand):
 
         _args_schema = cls._args_schema
         _args_schema.manifest_checkin_option = AAZStrArg(
-            options=["--manifest-checkin-option"],
+            options=["--checkin-option", "--manifest-checkin-option"],
             arg_group="ManifestCheckinSpecification",
+            help="The manifest checkin option.",
             default="DoNotAttemptAutomaticManifestCheckin",
             enum={"AttemptAutomaticManifestCheckin": "AttemptAutomaticManifestCheckin", "DoNotAttemptAutomaticManifestCheckin": "DoNotAttemptAutomaticManifestCheckin"},
         )
         _args_schema.manifest_checkin_params = AAZObjectArg(
-            options=["--manifest-checkin-params"],
+            options=["--checkin-params", "--manifest-checkin-params"],
             arg_group="ManifestCheckinSpecification",
+            help="The manifest checkin params.",
         )
 
         manifest_checkin_params = cls._args_schema.manifest_checkin_params
@@ -79,6 +81,7 @@ class Create(AAZCommand):
             options=["baseline-arm-manifest-location"],
             help="The baseline ARM manifest location supplied to the checkin manifest operation.",
             required=True,
+            default="EastUS2EUAP",
         )
         manifest_checkin_params.environment = AAZStrArg(
             options=["environment"],

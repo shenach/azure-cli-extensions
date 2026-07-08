@@ -1503,10 +1503,12 @@ class Create(AAZCommand):
         _args_schema.soft_delete_ttl = AAZDurationArg(
             options=["--soft-delete-ttl"],
             arg_group="SubscriptionLifecycleNotificationSpecifications",
+            help="The soft delete time to live.",
         )
         _args_schema.subscription_state_override_actions = AAZListArg(
-            options=["--subscription-state-override-actions"],
+            options=["--override-actions", "--subscription-state-override-actions"],
             arg_group="SubscriptionLifecycleNotificationSpecifications",
+            help="The subscription state override actions.",
         )
 
         subscription_state_override_actions = cls._args_schema.subscription_state_override_actions

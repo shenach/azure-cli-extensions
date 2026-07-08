@@ -101,6 +101,7 @@ class Create(AAZCommand):
         _args_schema.incident_contact_email = AAZStrArg(
             options=["--incident-contact-email"],
             arg_group="Management",
+            help="The email address of contacts for incidents related to the RP.",
         )
         _args_schema.incident_routing_service = AAZStrArg(
             options=["--incident-service", "--incident-routing-service"],

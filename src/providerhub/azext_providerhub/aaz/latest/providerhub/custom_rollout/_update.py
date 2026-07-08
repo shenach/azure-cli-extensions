@@ -159,6 +159,7 @@ class Update(AAZCommand):
         _args_schema.canary = AAZObjectArg(
             options=["--canary"],
             arg_group="Specification",
+            help="The canary regions to apply the manifest.",
             nullable=True,
         )
         _args_schema.manifest_checkin_specification = AAZObjectArg(
